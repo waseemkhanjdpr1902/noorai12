@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quran Reader — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/quran.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/chat" class="sidebar-link"><span class="icon">💬</span> AI Chat</a>
+      <a href="/quran" class="sidebar-link active"><span class="icon">📖</span> Quran Reader</a>
+      <a href="/hadith" class="sidebar-link"><span class="icon">📜</span> Hadith Library</a>
+      <a href="/tools" class="sidebar-link"><span class="icon">🧰</span> Islamic Tools</a>
+      <span class="sidebar-section">Account</span>
+      <a href="/subscription" class="sidebar-link"><span class="icon">⭐</span> Upgrade</a>
+      <a href="/profile" class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Loading…</div>
+          <div class="user-plan" id="sidebar-plan"></div>
+        </div>
+        <button class="btn-icon" data-action="logout" title="Sign out">⬡</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <main class="app-main">
+    <div class="quran-layout">
+
+      <!-- Surah list panel -->
+      <div class="surah-panel" id="surah-panel">
+        <div class="surah-panel-header">
+          <h3>The Holy Quran</h3>
+          <div class="surah-search">
+            <span class="surah-search-icon">🔍</span>
+            <input type="text" id="surah-search" placeholder="Search surahs…" aria-label="Search surahs">
+          </div>
+        </div>
+        <div class="surah-list" id="surah-list" role="listbox" aria-label="Surah list">
+          <!-- Skeleton loaders -->
+          ${Array(10).fill('').map(() => `
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(30,47,82,0.4)">
+              <div class="skeleton" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div>
+              <div style="flex:1">
+                <div class="skeleton skeleton-text" style="width:60%;margin-bottom:6px"></div>
+                <div class="skeleton skeleton-text" style="width:40%;height:0.8em"></div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Reader main -->
+      <div class="reader-main">
+        <!-- Toolbar -->
+        <div class="reader-toolbar">
+          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Menu">☰</button>
+          <div class="surah-title-area">
+            <div class="surah-title" id="reader-surah-title">Select a Surah</div>
+            <div class="surah-title-sub" id="reader-surah-sub">114 Surahs — Choose from the list</div>
+          </div>
+          <div class="reader-controls">
+            <select class="reader-control-select" id="translation-select" aria-label="Translation">
+              <option value="en.sahih">English — Saheeh Int'l</option>
+              <option value="en.pickthall">English — Pickthall</option>
+              <option value="ur.ahmedali">Urdu — Ahmed Ali</option>
+              <option value="ur.jalandhry">Urdu — Jalandhry</option>
+            </select>
+            <select class="reader-control-select" id="reciter-select" aria-label="Reciter">
+              <option value="ar.alafasy">Mishary Al-Afasy</option>
+              <option value="ar.abdulbasit">Abdul Basit</option>
+              <option value="ar.husary">Al-Hussary</option>
+              <option value="ar.minshawi">Al-Minshawi</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="search-toggle-btn" title="Search Quran" aria-label="Search Quran">🔍 Search</button>
+          </div>
+        </div>
+
+        <!-- Quran Search overlay -->
+        <div id="search-panel" style="display:none;padding:1rem 1.5rem;border-bottom:1px solid var(--navy-border);background:rgba(8,13,26,0.8)">
+          <div class="input-wrapper" style="max-width:600px">
+            <span class="input-icon">🔍</span>
+            <input class="form-input" type="text" id="quran-search-input" placeholder="Search the Quran in English…" autocomplete="off">
+          </div>
+          <div id="search-results" style="margin-top:0.75rem;max-height:240px;overflow-y:auto"></div>
+        </div>
+
+        <!-- Bismillah banner (shown when surah is loaded) -->
+        <div class="bismillah-banner" id="bismillah-banner" style="display:none">
+          <div class="bismillah-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+          <div class="bismillah-translation">In the name of Allah, the Most Gracious, the Most Merciful</div>
+        </div>
+
+        <!-- Ayah list -->
+        <div class="ayah-list" id="ayah-list" role="main">
+          <!-- Placeholder before selection -->
+          <div class="empty-state" id="reader-placeholder">
+            <div class="empty-state-icon">📖</div>
+            <h3>Select a Surah to begin reading</h3>
+            <p>Choose from the list on the left, or search above</p>
+          </div>
+        </div>
+
+        <!-- Audio player (shown when playing) -->
+        <div class="audio-player" id="audio-player" style="display:none">
+          <div class="audio-info">
+            <div class="audio-track" id="audio-track">Loading…</div>
+            <div class="audio-reciter" id="audio-reciter">Mishary Al-Afasy</div>
+          </div>
+          <div class="audio-controls">
+            <button class="btn-icon" id="audio-prev" title="Previous ayah">⏮</button>
+            <button class="btn-icon" id="audio-play" title="Play/Pause" style="font-size:1.2rem">▶</button>
+            <button class="btn-icon" id="audio-next" title="Next ayah">⏭</button>
+          </div>
+          <div class="audio-progress-wrap">
+            <span class="audio-time" id="audio-current">0:00</span>
+            <div class="audio-progress" id="audio-progress" role="progressbar">
+              <div class="audio-progress-fill" id="audio-progress-fill" style="width:0%"></div>
+            </div>
+            <span class="audio-time" id="audio-duration">0:00</span>
+          </div>
+          <button class="btn-icon" id="audio-close" title="Close player">✕</button>
+        </div>
+
+      </div><!-- /reader-main -->
+    </div><!-- /quran-layout -->
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<!-- Hidden audio element -->
+<audio id="audio-el" preload="none"></audio>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/quran.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAuth('/quran.html')) return;
+
+  let currentSurah  = null;
+  let currentAyahIdx = 0;
+  let isPlaying     = false;
+
+  const surahListEl     = document.getElementById('surah-list');
+  const ayahListEl      = document.getElementById('ayah-list');
+  const bismillahBanner = document.getElementById('bismillah-banner');
+  const placeholderEl   = document.getElementById('reader-placeholder');
+  const titleEl         = document.getElementById('reader-surah-title');
+  const subEl           = document.getElementById('reader-surah-sub');
+  const transSelect     = document.getElementById('translation-select');
+  const reciterSelect   = document.getElementById('reciter-select');
+  const audioEl         = document.getElementById('audio-el');
+  const audioPlayer     = document.getElementById('audio-player');
+
+  // ── Load surah list
+  try {
+    const surahs = await QuranAPI.getSurahList();
+    renderSurahList(surahs);
+  } catch {
+    surahListEl.innerHTML = '<p style="padding:1rem;color:var(--error);font-family:var(--font-ui);font-size:0.85rem">Failed to load surah list. Check your internet connection.</p>';
+  }
+
+  function renderSurahList(surahs) {
+    surahListEl.innerHTML = surahs.map(s => `
+      <div class="surah-item" data-number="${s.number}" role="option" tabindex="0" aria-label="${s.englishName}">
+        <div class="surah-number">${s.number}</div>
+        <div class="surah-info">
+          <div class="surah-english">${s.englishName}</div>
+          <div class="surah-meta-row">
+            <span class="surah-meaning">${s.englishNameTranslation}</span>
+            <span class="surah-ayahs">${s.numberOfAyahs} ayahs</span>
+          </div>
+        </div>
+        <div class="surah-arabic-name">${s.name}</div>
+      </div>`).join('');
+
+    surahListEl.querySelectorAll('.surah-item').forEach(item => {
+      const activate = () => loadSurah(parseInt(item.dataset.number));
+      item.addEventListener('click', activate);
+      item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(); });
+    });
+  }
+
+  // ── Load surah
+  async function loadSurah(number) {
+    // Highlight in list
+    surahListEl.querySelectorAll('.surah-item').forEach(i => i.classList.toggle('active', parseInt(i.dataset.number) === number));
+
+    // Show loading
+    ayahListEl.innerHTML = Array(5).fill('').map(() => `
+      <div class="ayah-skeleton">
+        <div class="skeleton ayah-skeleton-arabic"></div>
+        <div class="skeleton ayah-skeleton-trans"></div>
+      </div>`).join('');
+    bismillahBanner.style.display = 'none';
+    placeholderEl.remove?.();
+
+    try {
+      const edition = transSelect.value;
+      const data    = await QuranAPI.getSurahWithTranslation(number, edition);
+      currentSurah  = data;
+      currentAyahIdx = 0;
+      audioData = null; // Reset audio cache for new surah
+
+      titleEl.textContent = `${data.number}. ${data.englishName}`;
+      subEl.textContent   = `${data.englishNameTranslation} • ${data.numberOfAyahs} ayahs • ${QuranAPI.getRevelationType(data.revelationType)}`;
+
+      // Bismillah for all except Al-Tawbah (9)
+      if (data.number !== 9) {
+        bismillahBanner.style.display = 'block';
+      }
+
+      renderAyahs(data);
+    } catch (err) {
+      ayahListEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠</div><h3>Failed to load surah</h3><p>Please try again</p></div>`;
+      UI.Toast.error('Error', 'Could not load this surah. Please try again.');
+    }
+  }
+
+  function renderAyahs(data) {
+    ayahListEl.innerHTML = data.ayahs.map((ayah, i) => `
+      <div class="ayah-card" data-index="${i}">
+        <div class="ayah-number-badge">${ayah.numberInSurah}</div>
+        <div class="ayah-arabic arabic">${ayah.arabic}</div>
+        <div class="ayah-translation">${ayah.translation}</div>
+        <div class="ayah-actions">
+          <button class="ayah-action play-ayah-btn" data-index="${i}" title="Listen">▶ Listen</button>
+          <button class="ayah-action bookmark-btn ${Auth.isBookmarked(data.number, ayah.numberInSurah) ? 'bookmarked' : ''}" data-surah="${data.number}" data-ayah="${ayah.numberInSurah}">
+            ${Auth.isBookmarked(data.number, ayah.numberInSurah) ? '🔖 Bookmarked' : '🔖 Bookmark'}
+          </button>
+          <button class="ayah-action copy-ayah-btn" data-text="${ayah.arabic} — ${ayah.translation}">📋 Copy</button>
+          <button class="ayah-action ask-ai-btn" data-text="Explain the meaning of Quran ${data.number}:${ayah.numberInSurah} — ${ayah.translation}">💬 Ask AI</button>
+        </div>
+      </div>`).join('');
+
+    // Bind ayah actions
+    ayahListEl.querySelectorAll('.play-ayah-btn').forEach(btn => {
+      btn.addEventListener('click', () => playAyah(parseInt(btn.dataset.index)));
+    });
+    ayahListEl.querySelectorAll('.bookmark-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const surah = parseInt(this.dataset.surah);
+        const ayah  = parseInt(this.dataset.ayah);
+        if (Auth.isBookmarked(surah, ayah)) {
+          Auth.removeBookmark(surah, ayah);
+          this.textContent = '🔖 Bookmark';
+          this.classList.remove('bookmarked');
+          UI.Toast.info('Removed', 'Bookmark removed');
+        } else {
+          Auth.addBookmark(surah, ayah);
+          this.textContent = '🔖 Bookmarked';
+          this.classList.add('bookmarked');
+          UI.Toast.success('Saved', 'Ayah bookmarked!');
+        }
+      });
+    });
+    ayahListEl.querySelectorAll('.copy-ayah-btn').forEach(btn => {
+      btn.addEventListener('click', function() { UI.copyToClipboard(this.dataset.text, this); });
+    });
+    ayahListEl.querySelectorAll('.ask-ai-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        sessionStorage.setItem('noorai_chat_prefill', this.dataset.text);
+        window.location.href = '/chat';
+      });
+    });
+  }
+
+  // ── Audio player — uses global ayah numbers from alquran.cloud API
+  // audioData holds ayahs fetched from the API with correct global numbers
+  let audioData = null;
+
+  async function ensureAudioData(reciter) {
+    if (!currentSurah) return null;
+    const cacheKey = `${currentSurah.number}_${reciter}`;
+    if (audioData && audioData._cacheKey === cacheKey) return audioData;
+    try {
+      const data = await QuranAPI.getSurahAudio(currentSurah.number, reciter);
+      audioData = data;
+      audioData._cacheKey = cacheKey;
+      return audioData;
+    } catch (e) {
+      console.error('Failed to load audio data:', e);
+      return null;
+    }
+  }
+
+  async function playAyah(index) {
+    if (!currentSurah) return;
+    currentAyahIdx = index;
+    const ayah    = currentSurah.ayahs[index];
+    const reciter = reciterSelect.value;
+
+    // Show loading state
+    document.getElementById('audio-play').textContent = '⏳';
+    audioPlayer.style.display = 'flex';
+    document.getElementById('audio-track').textContent = `Loading Ayah ${ayah.numberInSurah}…`;
+
+    // Get audio data from API to retrieve the global ayah number
+    const data = await ensureAudioData(reciter);
+    let url;
+    if (data && data.ayahs && data.ayahs[index]) {
+      // Use the global ayah number from the API response
+      const globalNum = data.ayahs[index].number;
+      url = QuranAPI.getAyahAudioUrl(globalNum, reciter);
+    } else {
+      // Fallback: calculate global ayah number manually
+      // Each surah has a known start ayah in the Quran
+      // Global ayah = sum of ayahs in all previous surahs + ayah index + 1
+      // We use the ayah.number from currentSurah which IS the global number
+      const globalNum = ayah.number || (currentSurah.number * 10 + index); // best-effort
+      url = QuranAPI.getAyahAudioUrl(globalNum, reciter);
+    }
+
+    audioEl.src = url;
+    audioEl.load();
+    audioEl.play().then(() => {
+      isPlaying = true;
+      document.getElementById('audio-play').textContent = '⏸';
+      audioPlayer.style.display = 'flex';
+      document.getElementById('audio-track').textContent = `Surah ${currentSurah.englishName} — Ayah ${ayah.numberInSurah}`;
+      document.getElementById('audio-reciter').textContent = CONFIG.RECITERS.find(r => r.id === reciter)?.name || reciter;
+    }).catch(err => {
+      console.error('Audio play error:', err);
+      document.getElementById('audio-play').textContent = '▶';
+      UI.Toast.warning('Audio Unavailable', `Could not play Ayah ${ayah.numberInSurah}. Try a different reciter.`);
+    });
+  }
+
+  audioEl.addEventListener('timeupdate', () => {
+    if (!audioEl.duration) return;
+    const pct = (audioEl.currentTime / audioEl.duration) * 100;
+    document.getElementById('audio-progress-fill').style.width = pct + '%';
+    document.getElementById('audio-current').textContent = formatAudioTime(audioEl.currentTime);
+    document.getElementById('audio-duration').textContent = formatAudioTime(audioEl.duration);
+  });
+
+  audioEl.addEventListener('ended', () => {
+    document.getElementById('audio-play').textContent = '▶';
+    isPlaying = false;
+    // Auto-advance
+    if (currentSurah && currentAyahIdx < currentSurah.ayahs.length - 1) {
+      setTimeout(() => playAyah(currentAyahIdx + 1), 500);
+    }
+  });
+
+  document.getElementById('audio-play').addEventListener('click', () => {
+    if (isPlaying) { audioEl.pause(); isPlaying = false; document.getElementById('audio-play').textContent = '▶'; }
+    else           { audioEl.play(); isPlaying = true;  document.getElementById('audio-play').textContent = '⏸'; }
+  });
+  document.getElementById('audio-prev').addEventListener('click', () => { if (currentAyahIdx > 0) playAyah(currentAyahIdx - 1); });
+  document.getElementById('audio-next').addEventListener('click', () => { if (currentSurah && currentAyahIdx < currentSurah.ayahs.length - 1) playAyah(currentAyahIdx + 1); });
+  document.getElementById('audio-close').addEventListener('click', () => { audioEl.pause(); audioPlayer.style.display = 'none'; isPlaying = false; });
+  document.getElementById('audio-progress').addEventListener('click', e => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct  = (e.clientX - rect.left) / rect.width;
+    if (audioEl.duration) audioEl.currentTime = pct * audioEl.duration;
+  });
+
+  function formatAudioTime(secs) {
+    if (!secs || isNaN(secs)) return '0:00';
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
+
+  // ── Translation change
+  transSelect.addEventListener('change', () => { if (currentSurah) loadSurah(currentSurah.number); });
+  reciterSelect.addEventListener('change', () => { audioData = null; }); // Reset audio cache on reciter change
+
+  // ── Surah search
+  document.getElementById('surah-search').addEventListener('input', UI.debounce(function() {
+    const q = this.value.toLowerCase();
+    surahListEl.querySelectorAll('.surah-item').forEach(item => {
+      const name = item.querySelector('.surah-english')?.textContent?.toLowerCase() || '';
+      const num  = item.dataset.number || '';
+      item.style.display = (!q || name.includes(q) || num.includes(q)) ? '' : 'none';
+    });
+  }, 200));
+
+  // ── Quran search
+  document.getElementById('search-toggle-btn').addEventListener('click', () => {
+    const panel = document.getElementById('search-panel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'block') document.getElementById('quran-search-input').focus();
+  });
+
+  document.getElementById('quran-search-input').addEventListener('input', UI.debounce(async function() {
+    const q = this.value.trim();
+    const resultsEl = document.getElementById('search-results');
+    if (!q) { resultsEl.innerHTML = ''; return; }
+    resultsEl.innerHTML = '<div class="spinner spinner-sm" style="margin:0.5rem auto"></div>';
+    try {
+      const matches = await QuranAPI.searchQuran(q);
+      if (!matches.length) { resultsEl.innerHTML = '<p style="font-family:var(--font-ui);font-size:0.8rem;color:var(--text-muted)">No results found</p>'; return; }
+      resultsEl.innerHTML = matches.slice(0, 12).map(m => `
+        <div style="padding:0.5rem;border-radius:8px;cursor:pointer;transition:background 0.2s;margin-bottom:4px" class="search-result-item" data-surah="${m.surah.number}">
+          <span style="font-family:var(--font-ui);font-size:0.72rem;color:var(--gold)">${m.surah.englishName} ${m.numberInSurah}</span><br>
+          <span style="font-family:var(--font-ui);font-size:0.82rem;color:var(--cream-dim)">${m.text.substring(0, 120)}…</span>
+        </div>`).join('');
+      resultsEl.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('mouseenter', () => item.style.background = 'rgba(255,255,255,0.04)');
+        item.addEventListener('mouseleave', () => item.style.background = '');
+        item.addEventListener('click', () => {
+          loadSurah(parseInt(item.dataset.surah));
+          document.getElementById('search-panel').style.display = 'none';
+        });
+      });
+    } catch { resultsEl.innerHTML = '<p style="font-family:var(--font-ui);font-size:0.8rem;color:var(--error)">Search failed</p>'; }
+  }, 400));
+
+  // ── Logout
+  document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      UI.showModal({ title: 'Sign Out', body: 'Are you sure?', actions: [
+        { id: 'cancel', label: 'Cancel', class: 'btn-secondary', onClick: UI.closeModal },
+        { id: 'logout', label: 'Sign Out', class: 'btn-danger', onClick: Auth.logout },
+      ]});
+    });
+  });
+
+  // ── Auto-load from URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('surah')) loadSurah(parseInt(params.get('surah')));
+  else loadSurah(1); // Default: Al-Fatiha
+});
+</script>
+</body>
+</html>

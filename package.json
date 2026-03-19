@@ -1,0 +1,9 @@
+{
+  "name": "noorai",
+  "version": "1.0.0",
+  "description": "NoorAI Islamic AI Companion",
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Chat — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/chat" class="sidebar-link active"><span class="icon">💬</span> AI Chat</a>
+      <a href="/quran" class="sidebar-link"><span class="icon">📖</span> Quran Reader</a>
+      <a href="/hadith" class="sidebar-link"><span class="icon">📜</span> Hadith Library</a>
+      <a href="/tools" class="sidebar-link"><span class="icon">🧰</span> Islamic Tools</a>
+      <span class="sidebar-section">Account</span>
+      <a href="/subscription" class="sidebar-link"><span class="icon">⭐</span> Upgrade</a>
+      <a href="/profile" class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Loading…</div>
+          <div class="user-plan" id="sidebar-plan"></div>
+        </div>
+        <button class="btn-icon" data-action="logout" title="Sign out">⬡</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Chat main -->
+  <main class="app-main">
+    <!-- Chat history panel (left) -->
+    <div class="chat-layout">
+      <div class="chat-history-panel" id="chat-history-panel">
+        <div class="chat-history-header">
+          <h3>Conversations</h3>
+          <button class="btn-icon" id="new-chat-btn" title="New conversation" aria-label="New conversation">✦</button>
+        </div>
+        <div class="chat-history-list" id="history-list">
+          <div class="empty-state" style="padding:2rem 1rem">
+            <div class="empty-state-icon" style="font-size:1.5rem">💬</div>
+            <p style="font-size:0.8rem">No conversations yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main chat area -->
+      <div class="chat-main">
+        <!-- Chat toolbar -->
+        <div class="chat-header">
+          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Menu">☰</button>
+          <div class="chat-header-info">
+            <div class="chat-header-title" id="chat-title">NoorAI Assistant</div>
+            <div class="chat-header-sub">Guided by Quran &amp; Sunnah</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span class="chat-model-badge">✦ Islamic AI</span>
+            <button class="btn-icon" id="clear-chat-btn" title="Clear conversation">🗑</button>
+          </div>
+        </div>
+
+        <!-- Messages container -->
+        <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
+          <!-- Welcome screen shown when no messages -->
+          <div class="chat-welcome" id="chat-welcome">
+            <div class="chat-welcome-icon">ن</div>
+            <h2>Ask NoorAI</h2>
+            <div class="chat-welcome-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            <p>Get guidance on prayer, Quran interpretation, Islamic finance, halal queries, and more — grounded in authentic scholarship.</p>
+
+            <div class="prompt-suggestions" id="prompt-suggestions">
+              <button class="prompt-suggestion" data-prompt="How do I perform Wudu (ablution) correctly?">
+                <div class="icon">💧</div>
+                <p>How do I perform Wudu correctly?</p>
+              </button>
+              <button class="prompt-suggestion" data-prompt="Explain the meaning of Surah Al-Fatiha">
+                <div class="icon">📖</div>
+                <p>Explain the meaning of Al-Fatiha</p>
+              </button>
+              <button class="prompt-suggestion" data-prompt="What are the conditions for Zakat to be obligatory?">
+                <div class="icon">💰</div>
+                <p>When does Zakat become obligatory?</p>
+              </button>
+              <button class="prompt-suggestion" data-prompt="What dua should I read before sleeping?">
+                <div class="icon">🌙</div>
+                <p>Best dua before sleeping?</p>
+              </button>
+              <button class="prompt-suggestion" data-prompt="What breaks the fast during Ramadan?">
+                <div class="icon">🌅</div>
+                <p>What breaks the fast in Ramadan?</p>
+              </button>
+              <button class="prompt-suggestion" data-prompt="Is cryptocurrency trading halal or haram in Islam?">
+                <div class="icon">💻</div>
+                <p>Is crypto trading halal?</p>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usage bar (free users) -->
+        <div class="usage-bar-wrap" id="usage-bar-wrap" style="display:none">
+          <div class="usage-label">
+            <span>Monthly AI usage</span>
+            <span id="usage-label-count"></span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="usage-fill"></div></div>
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <textarea
+              class="chat-textarea"
+              id="chat-input"
+              placeholder="Ask about prayer, Quran, fasting, Zakat, halal…"
+              rows="1"
+              maxlength="2000"
+              aria-label="Message input"
+            ></textarea>
+            <button class="chat-send-btn" id="send-btn" aria-label="Send message" title="Send (Enter)">➤</button>
+          </div>
+          <div class="chat-input-meta">
+            <span style="color:var(--text-faint);font-size:0.7rem">Press Enter to send · Shift+Enter for new line</span>
+            <span class="char-count" id="char-count">0/2000</span>
+          </div>
+        </div>
+      </div><!-- /chat-main -->
+    </div><!-- /chat-layout -->
+  </main>
+</div>
+
+<!-- Upgrade modal (shown when limit reached) -->
+<div id="upgrade-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.add('hidden')">✕</button>
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem">⭐</div>
+      <h2 class="modal-title">Monthly Limit Reached</h2>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      You've used all your free AI messages for this month. Upgrade to <strong>Hidayah Pro</strong> for unlimited conversations grounded in the Quran &amp; Sunnah.
+    </div>
+    <div class="modal-actions" style="justify-content:center;flex-direction:column;gap:0.75rem">
+      <a href="/subscription" class="btn btn-primary btn-full btn-lg">See Plans — from ₹399/month ✦</a>
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('upgrade-modal').classList.add('hidden')">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/chat.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!Auth.requireAuth('/chat.html')) return;
+
+  Chat.init();
+
+  const messagesEl   = document.getElementById('chat-messages');
+  const welcomeEl    = document.getElementById('chat-welcome');
+  const inputEl      = document.getElementById('chat-input');
+  const sendBtn      = document.getElementById('send-btn');
+  const charCount    = document.getElementById('char-count');
+  const historyList  = document.getElementById('history-list');
+  const chatTitle    = document.getElementById('chat-title');
+
+  // ── Load conversation from URL param
+  const params = new URLSearchParams(window.location.search);
+  const convParam = params.get('conv');
+  if (convParam) Chat.switchConversation(convParam);
+
+  // ── Render history list
+  function renderHistory() {
+    const convs = Chat.getConversationList();
+    if (convs.length === 0) {
+      historyList.innerHTML = `<div class="empty-state" style="padding:2rem 1rem"><div class="empty-state-icon" style="font-size:1.5rem">💬</div><p style="font-size:0.8rem">No conversations yet</p></div>`;
+      return;
+    }
+    historyList.innerHTML = convs.map(c => {
+      const active = Chat.getActiveConversation()?.id === c.id;
+      return `
+        <div class="chat-history-item ${active ? 'active' : ''}" data-id="${c.id}">
+          <span class="icon">💬</span>
+          <span class="chat-history-text">${c.title}</span>
+        </div>`;
+    }).join('');
+
+    historyList.querySelectorAll('.chat-history-item').forEach(item => {
+      item.addEventListener('click', () => {
+        Chat.switchConversation(item.dataset.id);
+        renderHistory();
+        renderMessages();
+      });
+    });
+  }
+
+  // ── Render messages for active conversation
+  function renderMessages() {
+    const conv = Chat.getActiveConversation();
+    if (!conv || conv.messages.length === 0) {
+      welcomeEl.style.display = 'flex';
+      messagesEl.querySelectorAll('.message-group').forEach(g => g.remove());
+      chatTitle.textContent = 'NoorAI Assistant';
+      return;
+    }
+    welcomeEl.style.display = 'none';
+    chatTitle.textContent = conv.title;
+    messagesEl.querySelectorAll('.message-group').forEach(g => g.remove());
+
+    conv.messages.forEach(msg => {
+      appendMessage(msg.role, msg.content, msg.timestamp);
+    });
+    scrollToBottom();
+  }
+
+  // ── Append a single message bubble
+  function appendMessage(role, content, timestamp) {
+    welcomeEl.style.display = 'none';
+    const isAI   = role === 'assistant';
+    const user   = Auth.getCurrentUser();
+    const initials = user?.name?.charAt(0).toUpperCase() || 'U';
+    const time   = timestamp ? new Date(timestamp).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }) : '';
+
+    const formatted = isAI ? Chat.formatAIMessage(content) : `<p>${content.replace(/</g,'&lt;')}</p>`;
+
+    const group = document.createElement('div');
+    group.className = 'message-group';
+    group.innerHTML = `
+      <div class="message-row ${isAI ? '' : 'user'}">
+        <div class="message-avatar ${isAI ? 'ai' : 'user'}">${isAI ? 'ن' : initials}</div>
+        <div class="message-content">
+          <div class="message-bubble ${isAI ? 'ai' : 'user'}">${formatted}</div>
+          <div class="message-time">${time}</div>
+          ${isAI ? `<div class="message-actions">
+            <button class="message-action-btn copy-btn" title="Copy">📋 Copy</button>
+          </div>` : ''}
+        </div>
+      </div>`;
+
+    group.querySelector('.copy-btn')?.addEventListener('click', function() {
+      UI.copyToClipboard(content, this);
+    });
+
+    messagesEl.appendChild(group);
+  }
+
+  // ── Typing indicator
+  function showTyping() {
+    const el = document.createElement('div');
+    el.className = 'message-group';
+    el.id = 'typing-indicator';
+    el.innerHTML = `
+      <div class="message-row">
+        <div class="message-avatar ai">ن</div>
+        <div class="message-content">
+          <div class="message-bubble ai">
+            <div class="typing-indicator">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    messagesEl.appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  function removeTyping() {
+    document.getElementById('typing-indicator')?.remove();
+  }
+
+  function scrollToBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  // ── Usage bar
+  function updateUsageBar() {
+    const user = Auth.getCurrentUser();
+    if (!user || user.plan !== 'free') { document.getElementById('usage-bar-wrap').style.display = 'none'; return; }
+    const plan = CONFIG.PLANS.free;
+    const rem  = Auth.getRemainingMessages();
+    const used = typeof rem === 'number' ? plan.ai_messages_per_month - rem : 0;
+    const pct  = Math.min(100, (used / plan.ai_messages_per_month) * 100);
+    document.getElementById('usage-bar-wrap').style.display = 'block';
+    document.getElementById('usage-fill').style.width = pct + '%';
+    document.getElementById('usage-label-count').textContent = `${used}/${plan.ai_messages_per_month}`;
+  }
+
+  // ── Send message
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text || sendBtn.disabled) return;
+
+    sendBtn.disabled  = true;
+    inputEl.disabled  = true;
+    inputEl.value     = '';
+    charCount.textContent = '0/2000';
+    UI.autoResize(inputEl);
+
+    appendMessage('user', text, new Date().toISOString());
+    const typing = showTyping();
+
+    const result = await Chat.sendMessage(text);
+
+    removeTyping();
+    sendBtn.disabled = false;
+    inputEl.disabled = false;
+    inputEl.focus();
+
+    if (result?.error) {
+      if (result.upgradeRequired) {
+        document.getElementById('upgrade-modal').classList.remove('hidden');
+      } else {
+        UI.Toast.error('Error', result.message || 'Something went wrong. Please try again.');
+      }
+      return;
+    }
+
+    if (result?.message) {
+      appendMessage('assistant', result.message.content, result.message.timestamp);
+      scrollToBottom();
+      renderHistory();
+      updateUsageBar();
+    }
+  }
+
+  // ── Event listeners
+  sendBtn.addEventListener('click', sendMessage);
+
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  inputEl.addEventListener('input', () => {
+    UI.autoResize(inputEl);
+    const len = inputEl.value.length;
+    charCount.textContent = `${len}/2000`;
+    charCount.className = 'char-count' + (len > 1800 ? ' over' : len > 1600 ? ' warn' : '');
+  });
+
+  document.getElementById('new-chat-btn').addEventListener('click', () => {
+    Chat.newConversation();
+    renderHistory();
+    renderMessages();
+    inputEl.focus();
+  });
+
+  document.getElementById('clear-chat-btn').addEventListener('click', () => {
+    const conv = Chat.getActiveConversation();
+    if (!conv) return;
+    UI.showModal({
+      title: 'Clear Conversation',
+      body:  'Are you sure you want to delete this conversation? This cannot be undone.',
+      actions: [
+        { id: 'cancel', label: 'Cancel', class: 'btn-secondary', onClick: UI.closeModal },
+        { id: 'clear', label: 'Delete', class: 'btn-danger', onClick: () => {
+          Chat.deleteConversation(conv.id);
+          UI.closeModal();
+          renderHistory();
+          renderMessages();
+        }},
+      ],
+    });
+  });
+
+  // Prompt suggestions
+  document.querySelectorAll('.prompt-suggestion').forEach(btn => {
+    btn.addEventListener('click', () => {
+      inputEl.value = btn.dataset.prompt;
+      UI.autoResize(inputEl);
+      charCount.textContent = `${inputEl.value.length}/2000`;
+      sendMessage();
+    });
+  });
+
+  // Logout
+  document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      UI.showModal({
+        title: 'Sign Out',
+        body: 'Are you sure you want to sign out?',
+        actions: [
+          { id: 'cancel', label: 'Cancel', class: 'btn-secondary', onClick: UI.closeModal },
+          { id: 'logout', label: 'Sign Out', class: 'btn-danger', onClick: Auth.logout },
+        ],
+      });
+    });
+  });
+
+  // ── Init
+  renderHistory();
+  renderMessages();
+  updateUsageBar();
+  inputEl.focus();
+
+  // ── Auto-fill prompt from Hadith/Quran "Ask AI" button ────
+  const savedPrompt = localStorage.getItem('noorai_chat_prompt');
+  if (savedPrompt) {
+    localStorage.removeItem('noorai_chat_prompt');
+    inputEl.value = savedPrompt;
+    if (typeof UI !== 'undefined' && UI.autoResize) UI.autoResize(inputEl);
+    // Auto-send after brief delay so UI is ready
+    setTimeout(() => sendMessage(), 300);
+  }
+});
+</script>
+</body>
+</html>

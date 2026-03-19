@@ -1,0 +1,42 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/signup.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/chat",
+      "destination": "/chat.html"
+    },
+    {
+      "source": "/hadith",
+      "destination": "/hadith.html"
+    },
+    {
+      "source": "/quran",
+      "destination": "/quran.html"
+    },
+    {
+      "source": "/subscription",
+      "destination": "/subscription.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/profile.html"
+    },
+    {
+      "source": "/tools",
+      "destination": "/tools.html"
+    }
+  ]
+}

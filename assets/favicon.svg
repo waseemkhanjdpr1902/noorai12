@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#080d1a"/>
+  <path d="M16 4 C10 4 5 9 5 15 C5 21 10 26 16 26 C13 23.5 11.5 20.5 11.5 17 C11.5 12.5 14.5 8.5 19 7 C18 6 17 5.5 16 4Z" fill="#c9a227"/>
+  <text x="16" y="22" text-anchor="middle" fill="#080d1a" font-size="12" font-family="serif">ن</text>
+</svg>

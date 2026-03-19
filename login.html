@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — NoorAI</title>
+<meta name="description" content="Sign in to NoorAI — Your Islamic AI Companion">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+<div class="mesh-overlay"></div>
+
+<div class="auth-page">
+  <div class="auth-layout">
+
+    <!-- Left Visual Panel -->
+    <div class="auth-visual">
+      <div class="auth-visual-logo">
+        <div class="logo">
+          <div class="logo-mark">ن</div>
+          <span class="logo-text">Noor<span>AI</span></span>
+        </div>
+      </div>
+      <div class="auth-visual-content">
+        <div class="auth-visual-arabic">اقرأ بِاسْمِ رَبِّكَ</div>
+        <h2 class="auth-visual-tagline">Your <em>Islamic AI</em><br>Companion</h2>
+        <div class="auth-visual-features">
+          <div class="auth-visual-feature">Quran guidance with authentic Tafsir</div>
+          <div class="auth-visual-feature">Prayer times & Islamic calendar</div>
+          <div class="auth-visual-feature">AI answers grounded in Sunnah</div>
+          <div class="auth-visual-feature">Daily Dhikr & habit tracker</div>
+        </div>
+      </div>
+      <!-- Decorative crescent -->
+      <svg class="auth-visual-crescent" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 10 C55 10 20 45 20 90 C20 135 55 170 100 170 C80 155 67 135 67 110 C67 75 88 47 120 40 C114 36 107 33 100 10Z" stroke="#c9a227" stroke-width="1.5" fill="none"/>
+        <circle cx="140" cy="60" r="8" stroke="#c9a227" stroke-width="1" fill="none"/>
+        <circle cx="125" cy="42" r="4" stroke="#c9a227" stroke-width="0.8" fill="none"/>
+        <circle cx="155" cy="48" r="3" stroke="#c9a227" stroke-width="0.8" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-header">
+        <h1 class="auth-form-title">Welcome back</h1>
+        <p class="auth-form-sub">Don't have an account? <a href="/signup">Create one free</a></p>
+      </div>
+
+      <!-- Error/Success banners -->
+      <div id="login-error" class="auth-error hidden" role="alert">
+        <span>⚠</span> <span id="login-error-msg"></span>
+      </div>
+
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉</span>
+            <input class="form-input" type="email" id="email" name="email"
+              placeholder="you@example.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="password" name="password"
+              placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="input-action" id="toggle-password" aria-label="Show password">👁</button>
+          </div>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <div class="form-check">
+          <input type="checkbox" id="remember" name="remember">
+          <label class="form-check-label" for="remember">Keep me signed in for 30 days</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-xl" id="login-btn">
+          <span class="btn-text">Sign In</span>
+        </button>
+
+        <p class="auth-terms">
+          By signing in you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </p>
+      </form>
+
+      <!-- Demo account hint -->
+      <div style="margin-top:1.5rem; padding:0.85rem 1rem; background:rgba(201,162,39,0.06); border:1px solid rgba(201,162,39,0.15); border-radius:10px;">
+        <p style="font-family:var(--font-ui);font-size:0.78rem;color:var(--text-muted);text-align:center">
+          ✦ No account? <a href="/signup" style="color:var(--gold)">Register in seconds</a> — free forever for basic access
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Redirect if already logged in
+  Auth.requireGuest();
+
+  const form      = document.getElementById('login-form');
+  const btn       = document.getElementById('login-btn');
+  const errorBanner = document.getElementById('login-error');
+  const errorMsg    = document.getElementById('login-error-msg');
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorBanner.classList.remove('hidden');
+    errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  function hideError() { errorBanner.classList.add('hidden'); }
+
+  // Toggle password visibility
+  document.getElementById('toggle-password').addEventListener('click', function() {
+    const input = document.getElementById('password');
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    this.textContent = showing ? '👁' : '🙈';
+  });
+
+  // Form submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+    UI.clearAllErrors(form);
+
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Client-side validation
+    if (!email) { UI.showFieldError(document.getElementById('email'), 'Email is required'); return; }
+    if (!password) { UI.showFieldError(document.getElementById('password'), 'Password is required'); return; }
+
+    UI.setButtonLoading(btn, true, 'Signing in…');
+
+    const result = Auth.login(email, password);
+
+    if (result.success) {
+      UI.Toast.success('Marhaba! 🌙', `Welcome back, ${result.user.name.split(' ')[0]}!`);
+      // Redirect to originally requested page or dashboard
+      const params = new URLSearchParams(window.location.search);
+      const next   = params.get('next') || '/dashboard';
+      setTimeout(() => { window.location.href = next; }, 800);
+    } else {
+      UI.setButtonLoading(btn, false);
+      showError(result.error);
+    }
+  });
+
+  // Clear error on input
+  form.querySelectorAll('input').forEach(i => i.addEventListener('input', hideError));
+});
+</script>
+</body>
+</html>

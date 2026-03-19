@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hadith Library — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+*{box-sizing:border-box}
+/* ── Sidebar ── */
+.app-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;flex-shrink:0;background:rgba(6,10,20,.98);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s}
+.sidebar-logo{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.sidebar-logo .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#7a5e10);display:flex;align-items:center;justify-content:center;font-family:var(--font-arabic);font-size:1.2rem;color:#000;font-weight:700}
+.logo-text{font-family:var(--font-display);font-size:1.05rem;color:var(--text-primary)}
+.logo-text span{color:var(--gold)}
+.sidebar-nav{flex:1;overflow-y:auto;padding:1rem .75rem;display:flex;flex-direction:column;gap:2px}
+.sidebar-section{font-family:var(--font-ui);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:.8rem .5rem .25rem;display:block}
+.sidebar-link{display:flex;align-items:center;gap:.7rem;padding:.6rem .75rem;border-radius:10px;text-decoration:none;font-family:var(--font-ui);font-size:.875rem;color:var(--text-muted);transition:all .2s}
+.sidebar-link .icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-link:hover{background:rgba(255,255,255,.05);color:var(--text-primary)}
+.sidebar-link.active{background:rgba(201,162,39,.12);color:var(--gold);font-weight:500}
+.sidebar-footer{padding:1rem;border-top:1px solid rgba(255,255,255,.05)}
+.sidebar-user{display:flex;align-items:center;gap:.65rem}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5e10);display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.85rem;font-weight:700;color:#000;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-family:var(--font-ui);font-size:.82rem;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-family:var(--font-ui);font-size:.68rem;color:var(--gold)}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:.25rem;border-radius:6px;transition:color .2s}
+.btn-icon:hover{color:var(--text-primary)}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.6)}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.open{display:block}}
+.app-main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+@media(max-width:900px){.app-main{margin-left:0}}
+
+/* ── Page layout ── */
+.hadith-page{display:flex;height:100vh;overflow:hidden}
+
+/* ── Left collections panel ── */
+.left-panel{width:290px;flex-shrink:0;background:rgba(8,12,24,.75);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow:hidden}
+.lp-head{padding:1.25rem 1.2rem .9rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.lp-title{font-family:var(--font-display);font-size:1rem;color:var(--text-primary);margin-bottom:.85rem}
+.lp-search{position:relative}
+.lp-search input{width:100%;padding:.58rem .75rem .58rem 2rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--text-primary);font-family:var(--font-ui);font-size:.85rem;outline:none;transition:border-color .2s}
+.lp-search input:focus{border-color:rgba(201,162,39,.4)}
+.lp-search-ico{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.8rem;pointer-events:none}
+.lp-filters{display:flex;gap:.4rem;padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.fpill{padding:.28rem .8rem;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--text-muted);font-family:var(--font-ui);font-size:.75rem;cursor:pointer;transition:all .2s}
+.fpill.on{background:rgba(201,162,39,.12);border-color:rgba(201,162,39,.3);color:var(--gold)}
+.coll-list{flex:1;overflow-y:auto;padding:.75rem}
+.ci{display:flex;align-items:center;gap:.8rem;padding:.9rem .85rem;border-radius:13px;cursor:pointer;border:1px solid transparent;margin-bottom:5px;transition:all .2s}
+.ci:hover{background:rgba(255,255,255,.04)}
+.ci.on{background:rgba(201,162,39,.07);border-color:rgba(201,162,39,.25)}
+.ci-icon{font-size:1.6rem;flex-shrink:0}
+.ci-name{font-family:var(--font-ui);font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:2px}
+.ci-arabic{font-family:var(--font-arabic);font-size:.82rem;color:var(--gold);display:block;margin-bottom:2px}
+.ci-meta{font-family:var(--font-ui);font-size:.7rem;color:var(--text-muted)}
+
+/* Chapter list (shown after picking collection) */
+.chapter-list{flex:1;overflow-y:auto;padding:.5rem .75rem;display:none}
+.chapter-list.show{display:block}
+.coll-list.hide{display:none}
+.ch-back{display:flex;align-items:center;gap:.5rem;padding:.7rem .85rem .5rem;cursor:pointer;font-family:var(--font-ui);font-size:.8rem;color:var(--text-muted);transition:color .2s}
+.ch-back:hover{color:var(--gold)}
+.ch-item{padding:.65rem .85rem;border-radius:9px;cursor:pointer;font-family:var(--font-ui);font-size:.82rem;color:var(--text-secondary);transition:all .2s;border:1px solid transparent;margin-bottom:3px}
+.ch-item:hover{background:rgba(255,255,255,.04);color:var(--text-primary)}
+.ch-item.on{background:rgba(201,162,39,.08);border-color:rgba(201,162,39,.2);color:var(--gold)}
+.ch-item-name{font-weight:500;margin-bottom:2px}
+.ch-item-meta{font-size:.7rem;color:var(--text-muted)}
+
+/* ── Reader ── */
+.hadith-reader{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.rbar{padding:.85rem 1.75rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;background:rgba(6,10,20,.92);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10}
+.rbar-title{flex:1;min-width:0;font-family:var(--font-display);font-size:.95rem;color:var(--text-primary)}
+.rbar-title .ra{font-family:var(--font-arabic);font-size:.88rem;color:var(--gold);margin-left:.4rem}
+.rbar-btn{padding:.4rem .9rem;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);font-family:var(--font-ui);font-size:.8rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.rbar-btn:hover:not([disabled]){border-color:rgba(201,162,39,.3);color:var(--gold)}
+.rbar-btn.on{background:rgba(201,162,39,.1);border-color:rgba(201,162,39,.35);color:var(--gold)}
+.rbar-btn[disabled]{opacity:.3;cursor:not-allowed}
+.rbar-info{font-family:var(--font-ui);font-size:.78rem;color:var(--text-muted);white-space:nowrap}
+.mob-tog{display:none;background:none;border:none;color:var(--text-primary);font-size:1.35rem;cursor:pointer}
+@media(max-width:900px){.mob-tog{display:flex}}
+
+/* Feed */
+.h-feed{flex:1;overflow-y:auto;padding:2rem 2.5rem;display:flex;flex-direction:column;gap:2rem}
+@media(max-width:700px){.h-feed{padding:1.25rem 1rem}}
+
+/* Welcome */
+.h-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:3rem 2rem}
+.hw-ar{font-family:var(--font-arabic);font-size:2.2rem;color:var(--gold);margin-bottom:.5rem;line-height:1.6}
+.hw-ar small{display:block;font-size:.85rem;color:var(--text-muted);font-family:var(--font-body);margin-top:.3rem}
+.hw-t{font-family:var(--font-display);font-size:1.5rem;color:var(--text-primary);margin-bottom:.75rem}
+.hw-d{font-family:var(--font-ui);font-size:.95rem;color:var(--text-muted);max-width:420px;line-height:1.7;margin-bottom:2rem}
+.hw-btns{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.hw-btn{padding:.6rem 1.25rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);font-family:var(--font-ui);font-size:.85rem;cursor:pointer;transition:all .2s}
+.hw-btn:hover{background:rgba(201,162,39,.08);border-color:rgba(201,162,39,.3);color:var(--gold)}
+
+/* ══ HADITH CARD — Big, readable, beautiful ══ */
+.h-card{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;transition:border-color .25s,box-shadow .25s}
+.h-card:hover{border-color:rgba(201,162,39,.22);box-shadow:0 6px 28px rgba(0,0,0,.22)}
+.h-card.bm{border-color:rgba(201,162,39,.38);background:rgba(201,162,39,.022)}
+
+/* Card header */
+.hc-hdr{display:flex;align-items:center;gap:.85rem;padding:1.1rem 1.5rem;background:rgba(255,255,255,.018);border-bottom:1px solid rgba(255,255,255,.05)}
+.hc-num{width:46px;height:46px;flex-shrink:0;background:linear-gradient(135deg,rgba(201,162,39,.18),rgba(201,162,39,.06));border:1px solid rgba(201,162,39,.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.88rem;font-weight:700;color:var(--gold)}
+.hc-meta{flex:1;min-width:0}
+.hc-src{font-family:var(--font-ui);font-size:.82rem;font-weight:600;color:var(--gold);margin-bottom:3px}
+.hc-ch{font-family:var(--font-body);font-size:.82rem;color:var(--text-muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc-bm{background:none;border:none;cursor:pointer;font-size:1.2rem;padding:.3rem;border-radius:8px;color:rgba(255,255,255,.2);flex-shrink:0;transition:transform .2s,color .2s}
+.hc-bm:hover{transform:scale(1.2);color:var(--gold)}
+.hc-bm.saved{color:var(--gold)}
+
+/* Arabic */
+.hc-arab{margin:1.5rem 1.75rem 0;padding:1.6rem 2rem;background:linear-gradient(135deg,rgba(201,162,39,.06),rgba(201,162,39,.02));border:1px solid rgba(201,162,39,.14);border-radius:14px;border-right:4px solid rgba(201,162,39,.45)}
+.hc-arab-txt{font-family:var(--font-arabic);font-size:1.65rem;line-height:2.6;color:var(--text-primary);text-align:right;direction:rtl;letter-spacing:.02em}
+.hc-arab.hide{display:none}
+
+/* English */
+.hc-eng{padding:1.6rem 1.75rem 1.25rem}
+.hc-eng-lbl{font-family:var(--font-ui);font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(201,162,39,.5);margin-bottom:.85rem;display:block}
+.hc-eng-txt{font-family:'Crimson Pro',Georgia,serif;font-size:1.2rem;line-height:2;color:rgba(255,255,255,.88)}
+.hc-eng-txt em{color:var(--gold);font-style:italic}
+
+/* Actions */
+.hc-acts{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:1rem 1.75rem 1.35rem;border-top:1px solid rgba(255,255,255,.04)}
+.hc-act{display:flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--text-muted);font-family:var(--font-ui);font-size:.82rem;cursor:pointer;transition:all .2s}
+.hc-act:hover{background:rgba(201,162,39,.08);border-color:rgba(201,162,39,.25);color:var(--gold)}
+.hc-act.ai{border-color:rgba(201,162,39,.2);color:rgba(201,162,39,.75)}
+.hc-act.ai:hover{background:rgba(201,162,39,.12);color:var(--gold)}
+
+/* Skeleton */
+.h-skel{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1.5rem 1.75rem}
+.sk{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;border-radius:8px;margin-bottom:10px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk14{height:14px}.sk80{height:80px;border-radius:12px}.sk18{height:18px}.w40{width:40%}.w80{width:80%}.w65{width:65%}
+
+/* Search dropdown */
+.sr-drop{position:absolute;top:100%;left:0;right:0;z-index:100;background:rgba(8,13,26,.99);border:1px solid rgba(255,255,255,.12);border-top:none;border-radius:0 0 14px 14px;max-height:360px;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.6);display:none}
+.sr-drop.open{display:block}
+.sr-item{padding:.9rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s}
+.sr-item:hover{background:rgba(255,255,255,.05)}
+.sr-col{font-family:var(--font-ui);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gold);margin-bottom:.3rem}
+.sr-txt{font-family:var(--font-ui);font-size:.83rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sr-empty{padding:1.5rem;text-align:center;font-family:var(--font-ui);font-size:.85rem;color:var(--text-muted)}
+
+/* Error */
+.err{padding:3rem 2rem;text-align:center}
+.err .ei{font-size:2.5rem;margin-bottom:1rem}
+.err h3{font-family:var(--font-display);font-size:1.15rem;color:var(--text-primary);margin-bottom:.5rem}
+.err p{font-family:var(--font-ui);font-size:.875rem;color:var(--text-muted);margin-bottom:1.5rem}
+.retry-btn{padding:.58rem 1.5rem;border-radius:10px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.3);color:var(--gold);font-family:var(--font-ui);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.retry-btn:hover{background:rgba(201,162,39,.2)}
+@media(max-width:900px){
+  .left-panel{position:fixed;left:260px;top:0;bottom:0;z-index:150;transform:translateX(-100%);transition:transform .3s;width:280px}
+  .left-panel.open{transform:translateX(0)}
+}
+</style>
+</head>
+<body>
+<div class="geo-pattern"></div>
+<div class="app-layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard"    class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/chat"         class="sidebar-link"><span class="icon">💬</span> AI Chat</a>
+      <a href="/quran"        class="sidebar-link"><span class="icon">📖</span> Quran Reader</a>
+      <a href="/hadith"       class="sidebar-link active"><span class="icon">📜</span> Hadith Library</a>
+      <a href="/tools"        class="sidebar-link"><span class="icon">🧰</span> Islamic Tools</a>
+      <span class="sidebar-section">Account</span>
+      <a href="/subscription" class="sidebar-link"><span class="icon">⭐</span> Upgrade</a>
+      <a href="/profile"      class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sb-av">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sb-nm">Loading…</div>
+          <div class="user-plan" id="sb-pl"></div>
+        </div>
+        <button class="btn-icon" data-action="logout">↩</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sb-ov"></div>
+
+  <main class="app-main">
+    <div class="hadith-page">
+
+      <!-- Left panel -->
+      <div class="left-panel" id="left-panel">
+        <div class="lp-head">
+          <div class="lp-title">📜 Hadith Library</div>
+          <div class="lp-search">
+            <span class="lp-search-ico">🔍</span>
+            <input type="text" id="srch" placeholder="Search hadiths…" autocomplete="off">
+            <div class="sr-drop" id="sr-drop"></div>
+          </div>
+        </div>
+        <div class="lp-filters">
+          <button class="fpill on" data-f="all">All</button>
+          <button class="fpill" data-f="saved">🔖 Saved</button>
+        </div>
+        <!-- Collections view -->
+        <div class="coll-list" id="coll-list"></div>
+        <!-- Chapters view -->
+        <div class="chapter-list" id="ch-list">
+          <div class="ch-back" id="ch-back">← Back to collections</div>
+          <div id="ch-items"></div>
+        </div>
+      </div>
+
+      <!-- Reader -->
+      <div class="hadith-reader">
+        <div class="rbar">
+          <button class="mob-tog" id="mob-tog">☰</button>
+          <div class="rbar-title" id="rbar-title">Select a collection</div>
+          <button class="rbar-btn on" id="arab-tog">عربي Arabic</button>
+          <span class="rbar-info" id="rbar-info"></span>
+        </div>
+
+        <div class="h-feed" id="h-feed">
+          <div class="h-welcome" id="h-welcome">
+            <div class="hw-ar">
+              إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ
+              <small>"Actions are judged by intentions" — Sahih Bukhari</small>
+            </div>
+            <h2 class="hw-t">Explore Authentic Hadith</h2>
+            <p class="hw-d">Browse thousands of verified hadiths from three of the six major authentic collections — with full Arabic text, English translation, and AI explanations.</p>
+            <div class="hw-btns">
+              <button class="hw-btn" onclick="openColl('bukhari')">📗 Sahih Bukhari</button>
+              <button class="hw-btn" onclick="openColl('muslim')">📘 Sahih Muslim</button>
+              <button class="hw-btn" onclick="openColl('abudawud')">📙 Sunan Abu Dawud</button>
+              <button class="hw-btn" onclick="showSaved()">🔖 My Saved Hadiths</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Auth.requireAuth();
+  const user = Auth.getCurrentUser();
+  if (!user) return;
+
+  document.getElementById('sb-av').textContent = (user.name||'U')[0].toUpperCase();
+  document.getElementById('sb-nm').textContent = user.name || 'User';
+  document.getElementById('sb-pl').textContent = (user.plan||'free').toUpperCase();
+
+  // ── API base ───────────────────────────────────────────────
+  const BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions';
+  const cache = {};
+
+  async function apiFetch(url) {
+    if (cache[url]) return cache[url];
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    cache[url] = d;
+    return d;
+  }
+
+  // ── Collections ────────────────────────────────────────────
+  const COLS = [
+    { id:'bukhari',  engId:'eng-bukhari',  araId:'ara-bukhari',  name:'Sahih Bukhari',   arabic:'صحيح البخاري', icon:'📗', chapters:97  },
+    { id:'muslim',   engId:'eng-muslim',   araId:'ara-muslim',   name:'Sahih Muslim',     arabic:'صحيح مسلم',   icon:'📘', chapters:56  },
+    { id:'abudawud', engId:'eng-abudawud', araId:'ara-abudawud', name:'Sunan Abu Dawud',  arabic:'سنن أبي داود', icon:'📙', chapters:43  },
+  ];
+
+  // ── State ──────────────────────────────────────────────────
+  let S = { col:null, chapter:null, chapters:[], showArabic:true, mode:'browse' };
+
+  // ── Bookmarks ──────────────────────────────────────────────
+  const BM = {
+    get:()=>{ try{return JSON.parse(localStorage.getItem('noorai_hbm2')||'[]')}catch{return[]} },
+    save:a=>localStorage.setItem('noorai_hbm2',JSON.stringify(a.slice(0,500))),
+    has:(c,n)=>BM.get().some(b=>b.c===c&&b.n===n),
+    toggle(c,n,txt){
+      const a=BM.get(),i=a.findIndex(b=>b.c===c&&b.n===n);
+      if(i>=0){a.splice(i,1);BM.save(a);return false;}
+      a.unshift({c,n,txt:txt.slice(0,300),t:Date.now()});BM.save(a);return true;
+    }
+  };
+
+  // ── Render collections ─────────────────────────────────────
+  function renderCols() {
+    document.getElementById('coll-list').innerHTML = COLS.map(c=>`
+      <div class="ci ${S.col?.id===c.id&&S.mode==='browse'?'on':''}" onclick="openColl('${c.id}')">
+        <div class="ci-icon">${c.icon}</div>
+        <div>
+          <div class="ci-name">${c.name}</div>
+          <span class="ci-arabic">${c.arabic}</span>
+          <div class="ci-meta">${c.chapters} chapters</div>
+        </div>
+      </div>`).join('');
+  }
+  renderCols();
+
+  // ── Open a collection → show chapters ─────────────────────
+  window.openColl = async function(id) {
+    const col = COLS.find(c=>c.id===id);
+    if(!col) return;
+    S.col = col; S.mode = 'browse';
+    document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
+    document.querySelector('[data-f="all"]').classList.add('on');
+    renderCols();
+
+    // Show loading chapters
+    document.getElementById('coll-list').classList.add('hide');
+    document.getElementById('ch-list').classList.add('show');
+    document.getElementById('ch-items').innerHTML = '<div style="padding:1rem;font-family:var(--font-ui);font-size:.82rem;color:var(--text-muted)">Loading chapters…</div>';
+    document.getElementById('rbar-title').innerHTML = `${col.icon} ${col.name} <span class="ra">${col.arabic}</span>`;
+
+    // Fetch sections/chapters
+    try {
+      const data = await apiFetch(`${BASE}/${col.engId}/sections.json`);
+      S.chapters = Object.entries(data.metadata?.sections||{}).map(([k,v])=>({
+        num: parseInt(k), name: v.pretext||v.name||`Chapter ${k}`, hadiths: v.hadithnumberend - v.hadithnumberstart + 1
+      }));
+
+      if (!S.chapters.length) {
+        // Fallback: just create numbered chapters
+        S.chapters = Array.from({length:col.chapters},(_,i)=>({num:i+1,name:`Chapter ${i+1}`,hadiths:null}));
+      }
+
+      renderChapters();
+      // Auto-load chapter 1
+      loadChapter(1);
+
+    } catch {
+      // Fallback chapters
+      S.chapters = Array.from({length:col.chapters},(_,i)=>({num:i+1,name:`Chapter ${i+1}`,hadiths:null}));
+      renderChapters();
+      loadChapter(1);
+    }
+  };
+
+  // ── Render chapter list ────────────────────────────────────
+  function renderChapters() {
+    document.getElementById('ch-items').innerHTML = S.chapters.map(ch=>`
+      <div class="ch-item ${S.chapter===ch.num?'on':''}" onclick="loadChapter(${ch.num})">
+        <div class="ch-item-name">${ch.num}. ${ch.name}</div>
+        ${ch.hadiths?`<div class="ch-item-meta">${ch.hadiths} hadiths</div>`:''}
+      </div>`).join('');
+  }
+
+  // ── Load a chapter ─────────────────────────────────────────
+  window.loadChapter = async function(num) {
+    S.chapter = num;
+    renderChapters();
+
+    const feed = document.getElementById('h-feed');
+    document.getElementById('h-welcome')?.remove();
+
+    const chInfo = S.chapters.find(c=>c.num===num);
+    document.getElementById('rbar-title').innerHTML =
+      `${S.col.icon} ${S.col.name} <span class="ra">Ch. ${num}${chInfo?.name&&chInfo.name!==`Chapter ${num}` ? ' — '+chInfo.name.slice(0,40) : ''}</span>`;
+    document.getElementById('rbar-info').textContent = '';
+
+    // Skeletons
+    feed.innerHTML = Array(4).fill('').map(()=>`
+      <div class="h-skel">
+        <div class="sk sk14 w40"></div>
+        <div class="sk sk80" style="margin:1rem 0"></div>
+        <div class="sk sk18 w80"></div>
+        <div class="sk sk18 w65" style="margin-top:8px"></div>
+      </div>`).join('');
+
+    try {
+      // Fetch English and Arabic in parallel
+      const [engData, araData] = await Promise.all([
+        apiFetch(`${BASE}/${S.col.engId}/${num}.json`),
+        apiFetch(`${BASE}/${S.col.araId}/${num}.json`).catch(()=>null),
+      ]);
+
+      const engHadiths = engData?.hadiths || [];
+      const araHadiths = araData?.hadiths || [];
+
+      // Build arabic lookup map
+      const araMap = {};
+      araHadiths.forEach(h=>{ araMap[h.hadithnumber] = h.text; });
+
+      if (!engHadiths.length) throw new Error('No hadiths in this chapter');
+
+      document.getElementById('rbar-info').textContent = `${engHadiths.length} hadiths`;
+
+      feed.innerHTML = engHadiths.map(h => {
+        const arabicTxt = araMap[h.hadithnumber] || '';
+        return buildCard(h.hadithnumber, arabicTxt, h.text||'', chInfo?.name||'');
+      }).join('');
+
+      bindActions();
+      feed.scrollTop = 0;
+
+    } catch(err) {
+      feed.innerHTML = `
+        <div class="err">
+          <div class="ei">⚠️</div>
+          <h3>Could not load this chapter</h3>
+          <p>${err.message.includes('404') ? 'Chapter data not available. Try another chapter.' : 'Please check your connection.'}</p>
+          <button class="retry-btn" onclick="loadChapter(${num})">↺ Try Again</button>
+        </div>`;
+    }
+  };
+
+  // ── Build one card ─────────────────────────────────────────
+  function buildCard(num, arab, eng, chName) {
+    const colId = S.col?.id||'';
+    const bm    = BM.has(colId, num);
+    const engFmt = eng
+      ? eng.replace(/^(Narrated [^:]+:)/i, '<em>$1</em>')
+      : '<span style="opacity:.45;font-style:italic">Translation not available.</span>';
+
+    return `
+    <div class="h-card${bm?' bm':''}" id="hc${num}">
+      <div class="hc-hdr">
+        <div class="hc-num">${num}</div>
+        <div class="hc-meta">
+          <div class="hc-src">${S.col?.name||''} · Hadith ${num}</div>
+          ${chName?`<div class="hc-ch">${chName.slice(0,70)}</div>`:''}
+        </div>
+        <button class="hc-bm${bm?' saved':''}" data-c="${colId}" data-n="${num}">🔖</button>
+      </div>
+
+      ${arab?`<div class="hc-arab${S.showArabic?'':' hide'}">
+        <div class="hc-arab-txt">${arab}</div>
+      </div>`:''}
+
+      <div class="hc-eng">
+        <span class="hc-eng-lbl">English Translation</span>
+        <div class="hc-eng-txt">${engFmt}</div>
+      </div>
+
+      <div class="hc-acts">
+        <button class="hc-act ai" data-p="${encodeURIComponent(
+          'Explain the meaning, context, and practical lesson of this hadith from '+
+          (S.col?.name||'')+' (Hadith #'+num+'): '+eng.slice(0,400)
+        )}">💬 Ask AI to Explain</button>
+        <button class="hc-act copy-btn" data-t="${encodeURIComponent(
+          (S.col?.name||'')+' Hadith #'+num+': '+eng.slice(0,500)
+        )}">📋 Copy</button>
+        <button class="hc-act shr-btn" data-n="${num}">🔗 Share</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Bind card actions ──────────────────────────────────────
+  function bindActions() {
+    const feed = document.getElementById('h-feed');
+
+    feed.querySelectorAll('.hc-bm').forEach(btn=>{
+      btn.addEventListener('click', function(){
+        const c=this.dataset.c, n=parseInt(this.dataset.n);
+        const txt=document.getElementById(`hc${n}`)?.querySelector('.hc-eng-txt')?.textContent||'';
+        const saved=BM.toggle(c,n,txt);
+        this.classList.toggle('saved',saved);
+        document.getElementById(`hc${n}`)?.classList.toggle('bm',saved);
+        UI.Toast[saved?'success':'info'](
+          saved?'🔖 Saved':'Removed',
+          saved?`${S.col?.name} #${n} saved`:'Bookmark removed'
+        );
+      });
+    });
+
+    feed.querySelectorAll('.ai').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        localStorage.setItem('noorai_chat_prompt', decodeURIComponent(this.dataset.p));
+        window.location.href='/chat';
+      });
+    });
+
+    feed.querySelectorAll('.copy-btn').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        navigator.clipboard?.writeText(decodeURIComponent(this.dataset.t))
+          .then(()=>UI.Toast.success('Copied!','Hadith copied to clipboard'));
+      });
+    });
+
+    feed.querySelectorAll('.shr-btn').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const txt=`${S.col?.name} Hadith #${this.dataset.n} — NoorAI\n${location.origin}/hadith`;
+        navigator.share?navigator.share({title:`Hadith #${this.dataset.n}`,text:txt}):
+          navigator.clipboard?.writeText(txt).then(()=>UI.Toast.info('Copied','Share text copied'));
+      });
+    });
+  }
+
+  // ── Arabic toggle ──────────────────────────────────────────
+  document.getElementById('arab-tog').addEventListener('click',function(){
+    S.showArabic=!S.showArabic;
+    this.classList.toggle('on',S.showArabic);
+    document.querySelectorAll('.hc-arab').forEach(el=>el.classList.toggle('hide',!S.showArabic));
+  });
+
+  // ── Back button ────────────────────────────────────────────
+  document.getElementById('ch-back').addEventListener('click',()=>{
+    document.getElementById('ch-list').classList.remove('show');
+    document.getElementById('coll-list').classList.remove('hide');
+    S.col=null; renderCols();
+    document.getElementById('rbar-title').textContent='Select a collection';
+    document.getElementById('rbar-info').textContent='';
+    document.getElementById('h-feed').innerHTML='<div class="h-welcome" id="h-welcome"><div class="hw-ar">اقرأ<small>Select a collection to begin</small></div></div>';
+  });
+
+  // ── Saved hadiths ──────────────────────────────────────────
+  window.showSaved = function(){
+    S.mode='saved';
+    document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
+    document.querySelector('[data-f="saved"]').classList.add('on');
+    document.getElementById('ch-list').classList.remove('show');
+    document.getElementById('coll-list').classList.remove('hide');
+    renderCols();
+    document.getElementById('rbar-title').textContent='🔖 Saved Hadiths';
+    document.getElementById('rbar-info').textContent='';
+    document.getElementById('h-welcome')?.remove();
+
+    const feed=document.getElementById('h-feed');
+    const bms=BM.get();
+    if(!bms.length){
+      feed.innerHTML=`<div class="h-welcome"><div class="hw-ar">🔖</div><h2 class="hw-t">No saved hadiths yet</h2><p class="hw-d">Browse any collection and tap 🔖 to save hadiths here.</p><div class="hw-btns"><button class="hw-btn" onclick="openColl('bukhari')">📗 Browse Bukhari</button><button class="hw-btn" onclick="openColl('muslim')">📘 Browse Muslim</button></div></div>`;
+      return;
+    }
+    feed.innerHTML=bms.map(b=>{
+      const col=COLS.find(c=>c.id===b.c);
+      return`<div class="h-card bm">
+        <div class="hc-hdr">
+          <div class="hc-num">${b.n}</div>
+          <div class="hc-meta"><div class="hc-src">${col?.name||b.c} · #${b.n}</div></div>
+          <button class="hc-bm saved" data-c="${b.c}" data-n="${b.n}">🔖</button>
+        </div>
+        <div class="hc-eng">
+          <span class="hc-eng-lbl">Saved Excerpt</span>
+          <div class="hc-eng-txt">${b.txt}${b.txt.length>=300?'…':''}</div>
+        </div>
+        <div class="hc-acts">
+          <button class="hc-act" onclick="openColl('${b.c}')">📖 Browse collection</button>
+          <button class="hc-act ai" data-p="${encodeURIComponent('Explain this hadith from '+(col?.name||b.c)+' #'+b.n+': '+b.txt.slice(0,350))}">💬 Ask AI</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    feed.querySelectorAll('.hc-bm').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        BM.toggle(this.dataset.c,parseInt(this.dataset.n),'');
+        showSaved(); UI.Toast.info('Removed','Bookmark removed');
+      });
+    });
+    feed.querySelectorAll('.ai').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        localStorage.setItem('noorai_chat_prompt',decodeURIComponent(this.dataset.p));
+        window.location.href='/chat';
+      });
+    });
+  };
+
+  // ── Search ─────────────────────────────────────────────────
+  const srch=document.getElementById('srch');
+  const srdrop=document.getElementById('sr-drop');
+  let stmr=null;
+  srch.addEventListener('input',()=>{
+    clearTimeout(stmr);
+    const q=srch.value.trim();
+    if(q.length<3){srdrop.classList.remove('open');return;}
+    stmr=setTimeout(async()=>{
+      srdrop.classList.add('open');
+      srdrop.innerHTML='<div class="sr-empty">Searching…</div>';
+      try{
+        const results=[];
+        for(const col of COLS){
+          if(results.length>=8) break;
+          const d=await apiFetch(`${BASE}/${col.engId}/1.json`);
+          (d.hadiths||[]).forEach(h=>{
+            if((h.text||'').toLowerCase().includes(q.toLowerCase()))
+              results.push({...h,_col:col});
+          });
+        }
+        if(!results.length){srdrop.innerHTML=`<div class="sr-empty">No results for "<b>${q}</b>"<br><small>Try different keywords</small></div>`;return;}
+        srdrop.innerHTML=results.slice(0,8).map(r=>`
+          <div class="sr-item" data-c="${r._col.id}" data-n="${r.hadithnumber}">
+            <div class="sr-col">${r._col.name} · #${r.hadithnumber}</div>
+            <div class="sr-txt">${(r.text||'').slice(0,130)}…</div>
+          </div>`).join('');
+        srdrop.querySelectorAll('.sr-item').forEach(item=>{
+          item.addEventListener('click',()=>{
+            srdrop.classList.remove('open'); srch.value='';
+            openColl(item.dataset.c);
+          });
+        });
+      }catch{srdrop.innerHTML='<div class="sr-empty">Search failed. Try again.</div>';}
+    },450);
+  });
+  document.addEventListener('click',e=>{if(!e.target.closest('.lp-search'))srdrop.classList.remove('open');});
+
+  // ── Filter pills ───────────────────────────────────────────
+  document.querySelectorAll('.fpill').forEach(pill=>{
+    pill.addEventListener('click',function(){
+      document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('on'));
+      this.classList.add('on');
+      if(this.dataset.f==='saved') showSaved();
+      else{ S.mode='browse'; if(S.col) renderCols(); }
+    });
+  });
+
+  // ── Mobile & logout ────────────────────────────────────────
+  document.getElementById('mob-tog').addEventListener('click',()=>document.getElementById('left-panel').classList.toggle('open'));
+  document.querySelectorAll('[data-action="logout"]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      UI.showModal({title:'Sign Out',body:'Sign out of NoorAI?',actions:[
+        {id:'c',label:'Cancel',class:'btn-secondary',onClick:UI.closeModal},
+        {id:'l',label:'Sign Out',class:'btn-danger',onClick:Auth.logout},
+      ]});
+    });
+  });
+
+  // Auto-open Bukhari
+  openColl('bukhari');
+});
+</script>
+</body>
+</html>

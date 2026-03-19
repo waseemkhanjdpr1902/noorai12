@@ -1,0 +1,85 @@
+/* ============================================================
+   NoorAI — Design Tokens & CSS Variables
+   ============================================================ */
+:root {
+  /* Brand Colors */
+  --gold:          #c9a227;
+  --gold-light:    #e8c84a;
+  --gold-dim:      #8a6e1a;
+  --gold-pale:     rgba(201,162,39,0.12);
+  --navy:          #080d1a;
+  --navy-mid:      #0e1628;
+  --navy-card:     #111d35;
+  --navy-light:    #172540;
+  --navy-border:   #1e2f52;
+  --emerald:       #0d5c3a;
+  --emerald-light: #12784d;
+  --cream:         #f0e9d6;
+  --cream-dim:     #c4b896;
+  --white:         #ffffff;
+  --text-muted:    #8899bb;
+  --text-faint:    #4a5a78;
+
+  /* Semantic */
+  --error:         #e74c3c;
+  --error-bg:      rgba(231,76,60,0.1);
+  --success:       #27ae60;
+  --success-bg:    rgba(39,174,96,0.1);
+  --warning:       #f39c12;
+
+  /* Typography */
+  --font-display:  'Cinzel Decorative', serif;
+  --font-body:     'Crimson Pro', serif;
+  --font-ui:       'DM Sans', sans-serif;
+  --font-arabic:   'Noto Naskh Arabic', serif;
+  --font-mono:     'Fira Code', monospace;
+
+  /* Spacing Scale */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Border Radius */
+  --radius-sm:   4px;
+  --radius:      10px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 4px rgba(0,0,0,0.3);
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.4);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.5);
+  --shadow-gold: 0 0 40px rgba(201,162,39,0.2);
+  --shadow-glow: 0 0 60px rgba(201,162,39,0.3);
+
+  /* Transitions */
+  --t-fast:   0.15s ease;
+  --t-base:   0.25s ease;
+  --t-slow:   0.4s ease;
+  --t-slower: 0.6s ease;
+
+  /* Z-index */
+  --z-base:     1;
+  --z-nav:      50;
+  --z-sticky:   100;
+  --z-dropdown: 200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /* Sidebar width */
+  --sidebar-w: 260px;
+  --header-h:  64px;
+}

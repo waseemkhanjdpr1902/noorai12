@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Islamic Tools — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+*{box-sizing:border-box}
+/* App layout identical to other pages */
+.app-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;flex-shrink:0;background:rgba(6,10,20,.98);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .3s}
+.sidebar-logo{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.sidebar-logo .logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#7a5e10);display:flex;align-items:center;justify-content:center;font-family:var(--font-arabic);font-size:1.2rem;color:#000;font-weight:700}
+.logo-text{font-family:var(--font-display);font-size:1.05rem;color:var(--text-primary)}
+.logo-text span{color:var(--gold)}
+.sidebar-nav{flex:1;overflow-y:auto;padding:1rem .75rem;display:flex;flex-direction:column;gap:2px}
+.sidebar-section{font-family:var(--font-ui);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:.8rem .5rem .25rem;display:block}
+.sidebar-link{display:flex;align-items:center;gap:.7rem;padding:.6rem .75rem;border-radius:10px;text-decoration:none;font-family:var(--font-ui);font-size:.875rem;color:var(--text-muted);transition:all .2s}
+.sidebar-link .icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-link:hover{background:rgba(255,255,255,.05);color:var(--text-primary)}
+.sidebar-link.active{background:rgba(201,162,39,.12);color:var(--gold);font-weight:500}
+.sidebar-footer{padding:1rem;border-top:1px solid rgba(255,255,255,.05)}
+.sidebar-user{display:flex;align-items:center;gap:.65rem}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5e10);display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.85rem;font-weight:700;color:#000;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-family:var(--font-ui);font-size:.82rem;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-family:var(--font-ui);font-size:.68rem;color:var(--gold)}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:.25rem;border-radius:6px;transition:color .2s}
+.btn-icon:hover{color:var(--text-primary)}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.6)}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.open{display:block}}
+.app-main{margin-left:260px;flex:1;display:flex;flex-direction:column}
+@media(max-width:900px){.app-main{margin-left:0}}
+
+/* ── Tools page ── */
+.tools-page{padding:2.5rem 2.5rem 5rem;max-width:1100px}
+@media(max-width:700px){.tools-page{padding:1.5rem 1rem 4rem}}
+
+.page-hero{margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.page-hero-arabic{font-family:var(--font-arabic);font-size:1.5rem;color:var(--gold);margin-bottom:.5rem}
+.page-hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);color:var(--text-primary);margin-bottom:.5rem}
+.page-hero p{font-family:var(--font-ui);font-size:.9rem;color:var(--text-muted);max-width:520px;line-height:1.6}
+
+/* Tool section */
+.tool-section{margin-bottom:3.5rem;scroll-margin-top:2rem}
+.tool-header{display:flex;align-items:center;gap:.85rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.tool-header-icon{width:48px;height:48px;border-radius:14px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.tool-header-text h2{font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary);margin-bottom:3px}
+.tool-header-text p{font-family:var(--font-ui);font-size:.8rem;color:var(--text-muted)}
+.tool-body{background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden}
+
+/* ── QIBLA ── */
+.qibla-inner{padding:2rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.compass-wrap{position:relative;width:220px;height:220px}
+.compass-ring{width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.02);border:2px solid rgba(201,162,39,.2);position:relative;display:flex;align-items:center;justify-content:center}
+.compass-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(201,162,39,.08)}
+.compass-dots span{position:absolute;font-family:var(--font-ui);font-size:.75rem;font-weight:700;color:var(--text-muted)}
+.compass-n{top:10px;left:50%;transform:translateX(-50%);color:var(--gold)!important}
+.compass-s{bottom:10px;left:50%;transform:translateX(-50%)}
+.compass-e{right:10px;top:50%;transform:translateY(-50%)}
+.compass-w{left:10px;top:50%;transform:translateY(-50%)}
+.qibla-needle{position:absolute;top:50%;left:50%;width:4px;transform-origin:bottom center;transition:transform .8s ease}
+.qibla-needle-body{width:4px;height:80px;margin-left:-2px;margin-top:-80px;position:relative}
+.qibla-tip{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:24px solid var(--gold);margin-left:-6px;filter:drop-shadow(0 0 8px rgba(201,162,39,.6))}
+.qibla-base{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:18px solid rgba(255,255,255,.3);margin-left:-4px}
+.compass-kaaba{font-size:1.2rem;position:absolute;bottom:2px;left:50%;transform:translateX(-50%)}
+.qibla-info{text-align:center}
+.qibla-degree{font-family:var(--font-display);font-size:2rem;color:var(--gold);margin-bottom:.25rem}
+.qibla-label{font-family:var(--font-ui);font-size:.8rem;color:var(--text-muted)}
+.qibla-location{font-family:var(--font-ui);font-size:.78rem;color:var(--text-secondary);margin-top:.5rem}
+.qibla-btn{padding:.55rem 1.5rem;border-radius:10px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.3);color:var(--gold);font-family:var(--font-ui);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.qibla-btn:hover{background:rgba(201,162,39,.2)}
+
+/* ── ZAKAT ── */
+.zakat-inner{padding:2rem}
+.zakat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+@media(max-width:600px){.zakat-grid{grid-template-columns:1fr}}
+.zakat-field label{font-family:var(--font-ui);font-size:.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem}
+.zakat-input{width:100%;padding:.6rem .85rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--text-primary);font-family:var(--font-ui);font-size:.9rem;outline:none;transition:border-color .2s}
+.zakat-input:focus{border-color:rgba(201,162,39,.4)}
+.zakat-nisab{background:rgba(201,162,39,.05);border:1px solid rgba(201,162,39,.15);border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-family:var(--font-ui);font-size:.82rem;color:var(--text-muted)}
+.zakat-nisab strong{color:var(--gold)}
+.zakat-result{background:linear-gradient(135deg,rgba(201,162,39,.08),rgba(201,162,39,.03));border:1px solid rgba(201,162,39,.2);border-radius:14px;padding:1.5rem;text-align:center;display:none}
+.zakat-result.show{display:block}
+.zakat-amount{font-family:var(--font-display);font-size:2.2rem;color:var(--gold);margin-bottom:.25rem}
+.zakat-due-label{font-family:var(--font-ui);font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem}
+.zakat-breakdown{font-family:var(--font-ui);font-size:.78rem;color:var(--text-muted);line-height:1.7}
+.zakat-calc-btn{width:100%;padding:.7rem;border-radius:12px;background:linear-gradient(135deg,var(--gold),#a07818);border:none;color:#000;font-family:var(--font-ui);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:.5rem}
+.zakat-calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,162,39,.3)}
+
+/* ── 99 NAMES ── */
+.names-search{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:.75rem;align-items:center}
+.names-search input{flex:1;padding:.55rem .85rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:var(--text-primary);font-family:var(--font-ui);font-size:.85rem;outline:none;transition:border-color .2s}
+.names-search input:focus{border-color:rgba(201,162,39,.35)}
+.names-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;padding:1.25rem}
+.name-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1rem;cursor:pointer;transition:all .2s;text-align:center}
+.name-card:hover{background:rgba(201,162,39,.06);border-color:rgba(201,162,39,.25);transform:translateY(-2px)}
+.name-num{font-family:var(--font-ui);font-size:.65rem;font-weight:700;color:rgba(201,162,39,.5);letter-spacing:.06em;margin-bottom:.4rem}
+.name-arabic{font-family:var(--font-arabic);font-size:1.3rem;color:var(--gold);margin-bottom:.35rem;line-height:1.4}
+.name-transliteration{font-family:var(--font-ui);font-size:.72rem;font-weight:500;color:var(--text-muted);margin-bottom:.2rem;letter-spacing:.04em}
+.name-meaning{font-family:'Crimson Pro',serif;font-size:.88rem;color:var(--text-secondary);line-height:1.4}
+/* Name modal */
+.name-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem}
+.name-modal.open{display:flex}
+.name-modal-box{background:rgba(8,13,26,.98);border:1px solid rgba(201,162,39,.25);border-radius:24px;padding:2.5rem;max-width:480px;width:100%;text-align:center;position:relative}
+.name-modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer}
+.nm-num{font-family:var(--font-ui);font-size:.7rem;font-weight:700;color:rgba(201,162,39,.5);letter-spacing:.1em;margin-bottom:.75rem}
+.nm-arabic{font-family:var(--font-arabic);font-size:2.5rem;color:var(--gold);margin-bottom:.5rem;line-height:1.5}
+.nm-transliteration{font-family:var(--font-ui);font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.3rem;letter-spacing:.06em}
+.nm-meaning{font-family:'Crimson Pro',serif;font-size:1.1rem;color:var(--text-secondary);margin-bottom:1.25rem}
+.nm-reflection{font-family:'Crimson Pro',serif;font-size:.95rem;color:var(--text-muted);line-height:1.7;font-style:italic;background:rgba(201,162,39,.04);border:1px solid rgba(201,162,39,.1);border-radius:10px;padding:1rem}
+
+/* ── TASBEEH ── */
+.tasbeeh-inner{padding:2.5rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.tasbeeh-select-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.dhikr-btn{padding:.45rem 1rem;border-radius:50px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--text-muted);font-family:var(--font-ui);font-size:.78rem;cursor:pointer;transition:all .2s}
+.dhikr-btn.active{background:rgba(201,162,39,.12);border-color:rgba(201,162,39,.3);color:var(--gold)}
+.tasbeeh-arabic-display{font-family:var(--font-arabic);font-size:2rem;color:var(--gold);text-align:center;line-height:1.6;min-height:3.5rem}
+.tasbeeh-meaning{font-family:'Crimson Pro',serif;font-size:1rem;color:var(--text-muted);font-style:italic;text-align:center}
+.tasbeeh-count-display{font-family:var(--font-display);font-size:5rem;color:var(--text-primary);line-height:1;transition:transform .1s}
+.tasbeeh-count-display.bump{transform:scale(1.08)}
+.tasbeeh-target{font-family:var(--font-ui);font-size:.78rem;color:var(--text-muted)}
+.tasbeeh-progress-ring{position:relative;width:180px;height:180px}
+.tasbeeh-circle{display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative;width:180px;height:180px}
+.tasbeeh-ring-svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.tasbeeh-ring-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:8}
+.tasbeeh-ring-fill{fill:none;stroke:var(--gold);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .3s}
+.tasbeeh-tap-btn{width:130px;height:130px;border-radius:50%;background:linear-gradient(135deg,rgba(201,162,39,.15),rgba(201,162,39,.05));border:2px solid rgba(201,162,39,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font-arabic);font-size:2.5rem;color:var(--gold);transition:all .15s;user-select:none;position:relative;z-index:1}
+.tasbeeh-tap-btn:active{transform:scale(.95);background:rgba(201,162,39,.2);border-color:rgba(201,162,39,.5);box-shadow:0 0 30px rgba(201,162,39,.3)}
+.tasbeeh-controls{display:flex;gap:.6rem}
+.tc-btn{padding:.45rem 1.1rem;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--text-muted);font-family:var(--font-ui);font-size:.78rem;cursor:pointer;transition:all .2s}
+.tc-btn:hover{border-color:rgba(201,162,39,.3);color:var(--gold)}
+.tasbeeh-sessions{text-align:center;font-family:var(--font-ui);font-size:.78rem;color:rgba(201,162,39,.5)}
+
+/* ── HIJRI CALENDAR ── */
+.hijri-inner{padding:2rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.hijri-today{background:rgba(201,162,39,.06);border:1px solid rgba(201,162,39,.18);border-radius:16px;padding:1.5rem 2rem;text-align:center;width:100%;max-width:400px}
+.hijri-today-arabic{font-family:var(--font-arabic);font-size:1.8rem;color:var(--gold);margin-bottom:.5rem;line-height:1.5}
+.hijri-today-gregorian{font-family:var(--font-ui);font-size:.9rem;color:var(--text-muted)}
+.hijri-today-month{font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary);margin-bottom:.25rem}
+.hijri-events{width:100%;max-width:500px}
+.hijri-events h4{font-family:var(--font-ui);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.85rem}
+.event-item{display:flex;align-items:center;gap:.85rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.event-item:last-child{border-bottom:none}
+.event-icon{font-size:1.2rem;flex-shrink:0}
+.event-name{font-family:var(--font-ui);font-size:.85rem;color:var(--text-primary);margin-bottom:1px}
+.event-date{font-family:var(--font-ui);font-size:.72rem;color:var(--gold)}
+.hijri-loading{font-family:var(--font-ui);font-size:.85rem;color:var(--text-muted);text-align:center;padding:2rem}
+
+/* Mobile bar */
+.mob-topbar{display:none;align-items:center;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(6,10,20,.92)}
+@media(max-width:900px){.mob-topbar{display:flex}}
+.mob-ham{background:none;border:none;color:var(--text-primary);font-size:1.35rem;cursor:pointer;flex-shrink:0}
+.mob-title{font-family:var(--font-display);font-size:.95rem;color:var(--text-primary)}
+</style>
+</head>
+<body>
+<div class="geo-pattern"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard"    class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/chat"         class="sidebar-link"><span class="icon">💬</span> AI Chat</a>
+      <a href="/quran"        class="sidebar-link"><span class="icon">📖</span> Quran Reader</a>
+      <a href="/hadith"       class="sidebar-link"><span class="icon">📜</span> Hadith Library</a>
+      <a href="/tools"        class="sidebar-link active"><span class="icon">🧰</span> Islamic Tools</a>
+      <span class="sidebar-section">Account</span>
+      <a href="/subscription" class="sidebar-link"><span class="icon">⭐</span> Upgrade</a>
+      <a href="/profile"      class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sb-av">U</div>
+        <div class="user-info">
+          <div class="user-name" id="sb-nm">Loading…</div>
+          <div class="user-plan" id="sb-pl"></div>
+        </div>
+        <button class="btn-icon" data-action="logout">↩</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sb-ov"></div>
+
+  <main class="app-main">
+    <div class="mob-topbar">
+      <button class="mob-ham" id="mob-ham">☰</button>
+      <span class="mob-title">🧰 Islamic Tools</span>
+    </div>
+
+    <div class="tools-page">
+      <div class="page-hero">
+        <div class="page-hero-arabic">أَدَوَاتٌ إِسْلَامِيَّة</div>
+        <h1>Islamic Tools</h1>
+        <p>Your complete toolkit — Qibla direction, Zakat calculator, 99 Names of Allah, Tasbeeh counter, and Hijri calendar. All in one place.</p>
+      </div>
+
+      <!-- 1. QIBLA FINDER -->
+      <div class="tool-section" id="qibla">
+        <div class="tool-header">
+          <div class="tool-header-icon">🧭</div>
+          <div class="tool-header-text">
+            <h2>Qibla Finder</h2>
+            <p>Find the direction of the Kaaba from your current location</p>
+          </div>
+        </div>
+        <div class="tool-body">
+          <div class="qibla-inner">
+            <div class="compass-wrap">
+              <div class="compass-ring">
+                <div class="compass-dots">
+                  <span class="compass-n">N</span>
+                  <span class="compass-s">S</span>
+                  <span class="compass-e">E</span>
+                  <span class="compass-w">W</span>
+                </div>
+                <div class="qibla-needle" id="qibla-needle" style="transform:rotate(0deg)">
+                  <div class="qibla-needle-body">
+                    <div class="qibla-tip"></div>
+                    <div class="qibla-base"></div>
+                  </div>
+                </div>
+                <div class="compass-kaaba">🕋</div>
+              </div>
+            </div>
+            <div class="qibla-info">
+              <div class="qibla-degree" id="qibla-deg">—°</div>
+              <div class="qibla-label">Direction to Makkah</div>
+              <div class="qibla-location" id="qibla-loc">Tap below to get your location</div>
+            </div>
+            <button class="qibla-btn" id="qibla-btn">📍 Get My Location</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. ZAKAT CALCULATOR -->
+      <div class="tool-section" id="zakat">
+        <div class="tool-header">
+          <div class="tool-header-icon">⚖️</div>
+          <div class="tool-header-text">
+            <h2>Zakat Calculator</h2>
+            <p>Calculate your annual Zakat obligation accurately</p>
+          </div>
+        </div>
+        <div class="tool-body">
+          <div class="zakat-inner">
+            <div class="zakat-nisab" id="zakat-nisab">
+              <strong>Nisab Threshold:</strong> Based on 85g of gold — currently approx. <strong id="nisab-val">₹6,80,000</strong>.
+              Zakat is due on wealth held above nisab for one lunar year at <strong>2.5%</strong>.
+            </div>
+            <div class="zakat-grid">
+              <div class="zakat-field">
+                <label>Cash & Bank Savings (₹)</label>
+                <input type="number" class="zakat-input" id="z-cash" placeholder="0" min="0">
+              </div>
+              <div class="zakat-field">
+                <label>Gold & Silver Value (₹)</label>
+                <input type="number" class="zakat-input" id="z-gold" placeholder="0" min="0">
+              </div>
+              <div class="zakat-field">
+                <label>Business Inventory (₹)</label>
+                <input type="number" class="zakat-input" id="z-biz" placeholder="0" min="0">
+              </div>
+              <div class="zakat-field">
+                <label>Investments & Shares (₹)</label>
+                <input type="number" class="zakat-input" id="z-invest" placeholder="0" min="0">
+              </div>
+              <div class="zakat-field">
+                <label>Money Owed to You (₹)</label>
+                <input type="number" class="zakat-input" id="z-owed" placeholder="0" min="0">
+              </div>
+              <div class="zakat-field">
+                <label>Debts You Owe (₹)</label>
+                <input type="number" class="zakat-input" id="z-debts" placeholder="0" min="0">
+              </div>
+            </div>
+            <button class="zakat-calc-btn" id="zakat-calc-btn">Calculate My Zakat</button>
+            <div class="zakat-result" id="zakat-result">
+              <div class="zakat-amount" id="zakat-amount">₹0</div>
+              <div class="zakat-due-label">Your Zakat Due This Year</div>
+              <div class="zakat-breakdown" id="zakat-breakdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 99 NAMES -->
+      <div class="tool-section" id="names">
+        <div class="tool-header">
+          <div class="tool-header-icon">✨</div>
+          <div class="tool-header-text">
+            <h2>99 Names of Allah — Asma ul Husna</h2>
+            <p>The beautiful names and attributes of Allah ﷻ</p>
+          </div>
+        </div>
+        <div class="tool-body">
+          <div class="names-search">
+            <span style="color:var(--text-muted);font-size:.85rem">🔍</span>
+            <input type="text" id="names-search" placeholder="Search by name or meaning…">
+          </div>
+          <div class="names-grid" id="names-grid"></div>
+        </div>
+      </div>
+
+      <!-- 4. TASBEEH -->
+      <div class="tool-section" id="tasbeeh">
+        <div class="tool-header">
+          <div class="tool-header-icon">📿</div>
+          <div class="tool-header-text">
+            <h2>Tasbeeh Counter</h2>
+            <p>Digital dhikr counter — count your daily remembrance of Allah</p>
+          </div>
+        </div>
+        <div class="tool-body">
+          <div class="tasbeeh-inner">
+            <div class="tasbeeh-select-row" id="dhikr-btns"></div>
+            <div class="tasbeeh-arabic-display" id="tasbeeh-arabic">سُبْحَانَ اللَّهِ</div>
+            <div class="tasbeeh-meaning" id="tasbeeh-meaning">"Glory be to Allah"</div>
+            <div class="tasbeeh-circle">
+              <svg class="tasbeeh-ring-svg" width="180" height="180" viewBox="0 0 180 180">
+                <circle class="tasbeeh-ring-bg" cx="90" cy="90" r="78"/>
+                <circle class="tasbeeh-ring-fill" id="ring-fill" cx="90" cy="90" r="78" stroke-dasharray="490" stroke-dashoffset="490"/>
+              </svg>
+              <button class="tasbeeh-tap-btn" id="tasbeeh-tap">ذ</button>
+            </div>
+            <div>
+              <div class="tasbeeh-count-display" id="tasbeeh-count">0</div>
+              <div class="tasbeeh-target" id="tasbeeh-target" style="text-align:center">of 33</div>
+            </div>
+            <div class="tasbeeh-controls">
+              <button class="tc-btn" id="tasbeeh-reset">Reset</button>
+              <button class="tc-btn" id="tasbeeh-minus">−1</button>
+              <button class="tc-btn" id="target-33">33×</button>
+              <button class="tc-btn" id="target-100">100×</button>
+            </div>
+            <div class="tasbeeh-sessions" id="tasbeeh-sessions"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. HIJRI CALENDAR -->
+      <div class="tool-section" id="hijri">
+        <div class="tool-header">
+          <div class="tool-header-icon">🌙</div>
+          <div class="tool-header-text">
+            <h2>Hijri Calendar</h2>
+            <p>Today's Islamic date and upcoming important dates</p>
+          </div>
+        </div>
+        <div class="tool-body">
+          <div class="hijri-inner">
+            <div class="hijri-today" id="hijri-today">
+              <div class="hijri-loading">Loading Hijri date…</div>
+            </div>
+            <div class="hijri-events">
+              <h4>Important Islamic Dates (1447 AH)</h4>
+              <div id="hijri-events-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tools-page -->
+  </main>
+</div>
+
+<!-- Name detail modal -->
+<div class="name-modal" id="name-modal">
+  <div class="name-modal-box">
+    <button class="name-modal-close" id="name-modal-close">✕</button>
+    <div class="nm-num" id="nm-num"></div>
+    <div class="nm-arabic" id="nm-arabic"></div>
+    <div class="nm-transliteration" id="nm-translit"></div>
+    <div class="nm-meaning" id="nm-meaning"></div>
+    <div class="nm-reflection" id="nm-reflection"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  Auth.requireAuth();
+  const user=Auth.getCurrentUser();
+  if(!user) return;
+  document.getElementById('sb-av').textContent=(user.name||'U')[0].toUpperCase();
+  document.getElementById('sb-nm').textContent=user.name||'User';
+  document.getElementById('sb-pl').textContent=(user.plan||'free').toUpperCase();
+
+  // ── MOBILE / SIDEBAR ──────────────────────────────────────
+  document.getElementById('mob-ham').addEventListener('click',()=>{
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sb-ov').classList.toggle('open');
+  });
+  document.getElementById('sb-ov').addEventListener('click',()=>{
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sb-ov').classList.remove('open');
+  });
+  document.querySelectorAll('[data-action="logout"]').forEach(b=>b.addEventListener('click',()=>{
+    UI.showModal({title:'Sign Out',body:'Sign out of NoorAI?',actions:[
+      {id:'c',label:'Cancel',class:'btn-secondary',onClick:UI.closeModal},
+      {id:'l',label:'Sign Out',class:'btn-danger',onClick:Auth.logout},
+    ]});
+  }));
+
+  // ══════════════════════════════════════════════════════════
+  // 1. QIBLA FINDER
+  // ══════════════════════════════════════════════════════════
+  document.getElementById('qibla-btn').addEventListener('click',()=>{
+    if(!navigator.geolocation){
+      UI.Toast.warning('','Geolocation not supported by your browser.');return;
+    }
+    document.getElementById('qibla-loc').textContent='Getting your location…';
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude:lat,longitude:lng}=pos.coords;
+      try{
+        const r=await fetch(`https://api.aladhan.com/v1/qibla/${lat}/${lng}`);
+        const d=await r.json();
+        const deg=Math.round(d.data.direction);
+        document.getElementById('qibla-deg').textContent=deg+'°';
+        document.getElementById('qibla-needle').style.transform=`rotate(${deg}deg)`;
+
+        // Reverse geocode label
+        const rg=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`).catch(()=>null);
+        if(rg){
+          const rd=await rg.json();
+          const city=rd.address?.city||rd.address?.town||rd.address?.village||'';
+          const country=rd.address?.country||'';
+          document.getElementById('qibla-loc').textContent=`📍 ${city}${city&&country?', ':''}${country}`;
+        }else{
+          document.getElementById('qibla-loc').textContent=`📍 ${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+        }
+        UI.Toast.success('Qibla Found!',`Direction: ${deg}° from North`);
+      }catch(e){
+        document.getElementById('qibla-loc').textContent='Failed to fetch Qibla direction.';
+        UI.Toast.error('Error','Could not fetch Qibla direction. Please try again.');
+      }
+    },()=>{
+      document.getElementById('qibla-loc').textContent='Location access denied.';
+      UI.Toast.warning('Permission Denied','Please allow location access to find Qibla.');
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // 2. ZAKAT CALCULATOR
+  // ══════════════════════════════════════════════════════════
+  const NISAB_INR = 680000; // ₹6.8 lakh approx (85g gold @ ~₹8000/g)
+
+  document.getElementById('zakat-calc-btn').addEventListener('click',()=>{
+    const get=id=>parseFloat(document.getElementById(id).value)||0;
+    const cash=get('z-cash'), gold=get('z-gold'), biz=get('z-biz');
+    const invest=get('z-invest'), owed=get('z-owed'), debts=get('z-debts');
+    const total=cash+gold+biz+invest+owed-debts;
+    const result=document.getElementById('zakat-result');
+
+    if(total<=0){UI.Toast.warning('','Please enter your assets to calculate Zakat.');return;}
+
+    if(total<NISAB_INR){
+      document.getElementById('zakat-amount').textContent='₹0';
+      document.getElementById('zakat-breakdown').innerHTML=
+        `<strong style="color:var(--text-primary)">No Zakat due.</strong><br>
+        Your net zakatable wealth (₹${total.toLocaleString('en-IN')}) is below the Nisab threshold of ₹${NISAB_INR.toLocaleString('en-IN')}.`;
+    }else{
+      const zakat=total*0.025;
+      document.getElementById('zakat-amount').textContent='₹'+Math.round(zakat).toLocaleString('en-IN');
+      document.getElementById('zakat-breakdown').innerHTML=
+        `Total zakatable wealth: <strong style="color:var(--text-primary)">₹${Math.round(total).toLocaleString('en-IN')}</strong><br>
+        Nisab threshold: ₹${NISAB_INR.toLocaleString('en-IN')} ✓<br>
+        Zakat rate: 2.5%<br><br>
+        <em>Pay your Zakat to eligible recipients: the poor, the needy, in debt, and those working in the way of Allah. (Quran 9:60)</em>`;
+    }
+    result.classList.add('show');
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // 3. 99 NAMES OF ALLAH
+  // ══════════════════════════════════════════════════════════
+  const NAMES=[
+    {n:1,ar:'اللَّهُ',tr:'Allah',en:'The One God',ref:'The greatest name, encompassing all divine attributes.'},
+    {n:2,ar:'الرَّحْمَنُ',tr:'Ar-Rahman',en:'The Entirely Merciful',ref:'His mercy encompasses all of creation without exception.'},
+    {n:3,ar:'الرَّحِيمُ',tr:'Ar-Rahim',en:'The Especially Merciful',ref:'A special mercy reserved for the believers.'},
+    {n:4,ar:'الْمَلِكُ',tr:'Al-Malik',en:'The Sovereign',ref:'The absolute King and Owner of all dominion.'},
+    {n:5,ar:'الْقُدُّوسُ',tr:'Al-Quddus',en:'The Perfection',ref:'Free from all defects and imperfections.'},
+    {n:6,ar:'السَّلَامُ',tr:'As-Salam',en:'The Source of Peace',ref:'The One who grants security and peace.'},
+    {n:7,ar:'الْمُؤْمِنُ',tr:'Al-Mu\'min',en:'The Granter of Security',ref:'He who gives faith and ensures safety.'},
+    {n:8,ar:'الْمُهَيْمِنُ',tr:'Al-Muhaymin',en:'The Guardian',ref:'The Watchful Protector over all things.'},
+    {n:9,ar:'الْعَزِيزُ',tr:'Al-Aziz',en:'The Mighty',ref:'The Incomparable, Invincible One.'},
+    {n:10,ar:'الْجَبَّارُ',tr:'Al-Jabbar',en:'The Compeller',ref:'The One who restores and rectifies all affairs.'},
+    {n:11,ar:'الْمُتَكَبِّرُ',tr:'Al-Mutakabbir',en:'The Majestic',ref:'Supremely Great above all creation.'},
+    {n:12,ar:'الْخَالِقُ',tr:'Al-Khaliq',en:'The Creator',ref:'Who creates from nothing.'},
+    {n:13,ar:'الْبَارِئُ',tr:'Al-Bari\'',en:'The Originator',ref:'Who creates with precision and distinction.'},
+    {n:14,ar:'الْمُصَوِّرُ',tr:'Al-Musawwir',en:'The Fashioner',ref:'Who gives form and shape to all creation.'},
+    {n:15,ar:'الْغَفَّارُ',tr:'Al-Ghaffar',en:'The Perpetual Forgiver',ref:'Who forgives sins repeatedly and abundantly.'},
+    {n:16,ar:'الْقَهَّارُ',tr:'Al-Qahhar',en:'The Subduer',ref:'The Dominant One over all things.'},
+    {n:17,ar:'الْوَهَّابُ',tr:'Al-Wahhab',en:'The Bestower',ref:'Who gives generously without expecting return.'},
+    {n:18,ar:'الرَّزَّاقُ',tr:'Ar-Razzaq',en:'The Provider',ref:'Who provides sustenance for all creation.'},
+    {n:19,ar:'الْفَتَّاحُ',tr:'Al-Fattah',en:'The Opener',ref:'Who opens all doors of provision and mercy.'},
+    {n:20,ar:'الْعَلِيمُ',tr:'Al-Alim',en:'The All-Knowing',ref:'Whose knowledge encompasses everything.'},
+    {n:21,ar:'الْقَابِضُ',tr:'Al-Qabid',en:'The Withholder',ref:'Who constricts or withholds as He wills.'},
+    {n:22,ar:'الْبَاسِطُ',tr:'Al-Basit',en:'The Extender',ref:'Who expands and gives abundantly.'},
+    {n:23,ar:'الْخَافِضُ',tr:'Al-Khafid',en:'The Reducer',ref:'Who humbles the arrogant.'},
+    {n:24,ar:'الرَّافِعُ',tr:'Ar-Rafi\'',en:'The Exalter',ref:'Who elevates whom He wills.'},
+    {n:25,ar:'الْمُعِزُّ',tr:'Al-Mu\'izz',en:'The Honourer',ref:'Who grants honour to whom He wills.'},
+    {n:26,ar:'الْمُذِلُّ',tr:'Al-Mudhill',en:'The Dishonourer',ref:'Who humiliates the unjust.'},
+    {n:27,ar:'السَّمِيعُ',tr:'As-Sami\'',en:'The All-Hearing',ref:'Who hears every word, whisper, and thought.'},
+    {n:28,ar:'الْبَصِيرُ',tr:'Al-Basir',en:'The All-Seeing',ref:'Who sees everything in creation.'},
+    {n:29,ar:'الْحَكَمُ',tr:'Al-Hakam',en:'The Judge',ref:'The ultimate arbiter of all disputes.'},
+    {n:30,ar:'الْعَدْلُ',tr:'Al-Adl',en:'The Just',ref:'Whose justice is perfect and absolute.'},
+    {n:31,ar:'اللَّطِيفُ',tr:'Al-Latif',en:'The Subtle',ref:'Gentle and aware of the finest details.'},
+    {n:32,ar:'الْخَبِيرُ',tr:'Al-Khabir',en:'The Acquainted',ref:'Fully aware of all hidden matters.'},
+    {n:33,ar:'الْحَلِيمُ',tr:'Al-Halim',en:'The Forbearing',ref:'Patient and slow to punish.'},
+    {n:34,ar:'الْعَظِيمُ',tr:'Al-Azim',en:'The Magnificent',ref:'Of infinite greatness and grandeur.'},
+    {n:35,ar:'الْغَفُورُ',tr:'Al-Ghafur',en:'The Forgiving',ref:'Who pardons sins completely.'},
+    {n:36,ar:'الشَّكُورُ',tr:'Ash-Shakur',en:'The Appreciative',ref:'Who rewards even the smallest good deed.'},
+    {n:37,ar:'الْعَلِيُّ',tr:'Al-Ali',en:'The Most High',ref:'Exalted above all creation.'},
+    {n:38,ar:'الْكَبِيرُ',tr:'Al-Kabir',en:'The Greatest',ref:'Greater than can be comprehended.'},
+    {n:39,ar:'الْحَفِيظُ',tr:'Al-Hafiz',en:'The Preserver',ref:'Who guards and protects everything.'},
+    {n:40,ar:'الْمُقِيتُ',tr:'Al-Muqit',en:'The Sustainer',ref:'Who provides and maintains all things.'},
+    {n:41,ar:'الْحَسِيبُ',tr:'Al-Hasib',en:'The Accountant',ref:'Who takes account of all deeds.'},
+    {n:42,ar:'الْجَلِيلُ',tr:'Al-Jalil',en:'The Majestic',ref:'Of awesome splendour and authority.'},
+    {n:43,ar:'الْكَرِيمُ',tr:'Al-Karim',en:'The Generous',ref:'Endlessly generous and noble.'},
+    {n:44,ar:'الرَّقِيبُ',tr:'Ar-Raqib',en:'The Watchful',ref:'Ever-vigilant over all creation.'},
+    {n:45,ar:'الْمُجِيبُ',tr:'Al-Mujib',en:'The Responsive',ref:'Who answers all sincere prayers.'},
+    {n:46,ar:'الْوَاسِعُ',tr:'Al-Wasi\'',en:'The Vast',ref:'Whose knowledge and mercy are limitless.'},
+    {n:47,ar:'الْحَكِيمُ',tr:'Al-Hakim',en:'The Wise',ref:'Whose every action is perfect in wisdom.'},
+    {n:48,ar:'الْوَدُودُ',tr:'Al-Wadud',en:'The Loving',ref:'Who loves His servants unconditionally.'},
+    {n:49,ar:'الْمَجِيدُ',tr:'Al-Majid',en:'The Glorious',ref:'Of supreme glory and honour.'},
+    {n:50,ar:'الْبَاعِثُ',tr:'Al-Ba\'ith',en:'The Resurrector',ref:'Who will raise the dead on Judgement Day.'},
+    {n:51,ar:'الشَّهِيدُ',tr:'Ash-Shahid',en:'The Witness',ref:'Who witnesses all things at all times.'},
+    {n:52,ar:'الْحَقُّ',tr:'Al-Haqq',en:'The Truth',ref:'The only absolute reality and truth.'},
+    {n:53,ar:'الْوَكِيلُ',tr:'Al-Wakil',en:'The Trustee',ref:'The ultimate guardian and trustee.'},
+    {n:54,ar:'الْقَوِيُّ',tr:'Al-Qawi',en:'The Strong',ref:'Of infinite, inexhaustible strength.'},
+    {n:55,ar:'الْمَتِينُ',tr:'Al-Matin',en:'The Firm',ref:'Steadfast and firm in all matters.'},
+    {n:56,ar:'الْوَلِيُّ',tr:'Al-Wali',en:'The Protecting Friend',ref:'The ally and protector of the believers.'},
+    {n:57,ar:'الْحَمِيدُ',tr:'Al-Hamid',en:'The Praiseworthy',ref:'Deserving of all praise and gratitude.'},
+    {n:58,ar:'الْمُحْصِي',tr:'Al-Muhsi',en:'The All-Enumerating',ref:'Who counts and records everything.'},
+    {n:59,ar:'الْمُبْدِئُ',tr:'Al-Mubdi\'',en:'The Originator',ref:'Who begins creation anew.'},
+    {n:60,ar:'الْمُعِيدُ',tr:'Al-Mu\'id',en:'The Restorer',ref:'Who restores and recreates.'},
+    {n:61,ar:'الْمُحْيِي',tr:'Al-Muhyi',en:'The Giver of Life',ref:'Who gives and sustains all life.'},
+    {n:62,ar:'الْمُمِيتُ',tr:'Al-Mumit',en:'The Bringer of Death',ref:'Who decrees and brings about death.'},
+    {n:63,ar:'الْحَيُّ',tr:'Al-Hayy',en:'The Ever-Living',ref:'Who lives eternally without end.'},
+    {n:64,ar:'الْقَيُّومُ',tr:'Al-Qayyum',en:'The Sustainer',ref:'Upon Whom all existence depends.'},
+    {n:65,ar:'الْوَاجِدُ',tr:'Al-Wajid',en:'The Finder',ref:'Who finds whatever He seeks.'},
+    {n:66,ar:'الْمَاجِدُ',tr:'Al-Majid',en:'The Noble',ref:'Of utmost nobility and generosity.'},
+    {n:67,ar:'الْوَاحِدُ',tr:'Al-Wahid',en:'The Unique',ref:'Absolutely one with no partners.'},
+    {n:68,ar:'الأَحَدُ',tr:'Al-Ahad',en:'The One',ref:'The indivisible, uniquely singular.'},
+    {n:69,ar:'الصَّمَدُ',tr:'As-Samad',en:'The Eternal',ref:'The Self-Sufficient, upon Whom all depend.'},
+    {n:70,ar:'الْقَادِرُ',tr:'Al-Qadir',en:'The Capable',ref:'Capable of all things.'},
+    {n:71,ar:'الْمُقْتَدِرُ',tr:'Al-Muqtadir',en:'The All-Powerful',ref:'Of absolute and perfect power.'},
+    {n:72,ar:'الْمُقَدِّمُ',tr:'Al-Muqaddim',en:'The Expediter',ref:'Who advances and brings forward.'},
+    {n:73,ar:'الْمُؤَخِّرُ',tr:'Al-Mu\'akhkhir',en:'The Delayer',ref:'Who postpones and delays as He wills.'},
+    {n:74,ar:'الأَوَّلُ',tr:'Al-Awwal',en:'The First',ref:'Before Whom there is nothing.'},
+    {n:75,ar:'الآخِرُ',tr:'Al-Akhir',en:'The Last',ref:'After Whom there is nothing.'},
+    {n:76,ar:'الظَّاهِرُ',tr:'Az-Zahir',en:'The Manifest',ref:'Who is apparent through His signs.'},
+    {n:77,ar:'الْبَاطِنُ',tr:'Al-Batin',en:'The Hidden',ref:'Who is beyond comprehension in essence.'},
+    {n:78,ar:'الْوَالِي',tr:'Al-Wali',en:'The Governor',ref:'Who governs and controls all affairs.'},
+    {n:79,ar:'الْمُتَعَالِي',tr:'Al-Muta\'ali',en:'The Self-Exalted',ref:'Supremely exalted above all.'},
+    {n:80,ar:'الْبَرُّ',tr:'Al-Barr',en:'The Source of Goodness',ref:'The kind and benevolent to creation.'},
+    {n:81,ar:'التَّوَّابُ',tr:'At-Tawwab',en:'The Acceptor of Repentance',ref:'Who accepts sincere repentance.'},
+    {n:82,ar:'الْمُنْتَقِمُ',tr:'Al-Muntaqim',en:'The Avenger',ref:'Who justly punishes the unjust.'},
+    {n:83,ar:'الْعَفُوُّ',tr:'Al-Afuww',en:'The Pardoner',ref:'Who pardons completely and forgives fully.'},
+    {n:84,ar:'الرَّؤُوفُ',tr:'Ar-Ra\'uf',en:'The Compassionate',ref:'Of extreme tenderness and kindness.'},
+    {n:85,ar:'مَالِكُ الْمُلْكِ',tr:'Malik-ul-Mulk',en:'Owner of All Sovereignty',ref:'The absolute owner of all dominion.'},
+    {n:86,ar:'ذُوالْجَلَالِ وَالإِكْرَامِ',tr:'Dhul-Jalali wal-Ikram',en:'Lord of Majesty and Honour',ref:'Possessor of glory and generosity.'},
+    {n:87,ar:'الْمُقْسِطُ',tr:'Al-Muqsit',en:'The Equitable',ref:'Who deals with perfect fairness.'},
+    {n:88,ar:'الْجَامِعُ',tr:'Al-Jami\'',en:'The Gatherer',ref:'Who gathers all of creation.'},
+    {n:89,ar:'الْغَنِيُّ',tr:'Al-Ghani',en:'The Self-Sufficient',ref:'Free from all needs.'},
+    {n:90,ar:'الْمُغْنِي',tr:'Al-Mughni',en:'The Enricher',ref:'Who enriches whom He wills.'},
+    {n:91,ar:'الْمَانِعُ',tr:'Al-Mani\'',en:'The Withholder',ref:'Who prevents harm from reaching the believers.'},
+    {n:92,ar:'الضَّارُّ',tr:'Ad-Darr',en:'The Distresser',ref:'Who tests through difficulty.'},
+    {n:93,ar:'النَّافِعُ',tr:'An-Nafi\'',en:'The Propitious',ref:'Who bestows benefit.'},
+    {n:94,ar:'النُّورُ',tr:'An-Nur',en:'The Light',ref:'The light of the heavens and the earth.'},
+    {n:95,ar:'الْهَادِي',tr:'Al-Hadi',en:'The Guide',ref:'Who guides to the straight path.'},
+    {n:96,ar:'الْبَدِيعُ',tr:'Al-Badi\'',en:'The Incomparable',ref:'Who creates uniquely without precedent.'},
+    {n:97,ar:'الْبَاقِي',tr:'Al-Baqi',en:'The Everlasting',ref:'Who endures eternally.'},
+    {n:98,ar:'الْوَارِثُ',tr:'Al-Warith',en:'The Inheritor',ref:'Who remains when all else perishes.'},
+    {n:99,ar:'الرَّشِيدُ',tr:'Ar-Rashid',en:'The Guide to the Right Path',ref:'Who guides to what is correct.'},
+  ];
+
+  function renderNames(list){
+    document.getElementById('names-grid').innerHTML=list.map(n=>`
+      <div class="name-card" data-n="${n.n}">
+        <div class="name-num">${n.n.toString().padStart(2,'0')}</div>
+        <div class="name-arabic">${n.ar}</div>
+        <div class="name-transliteration">${n.tr}</div>
+        <div class="name-meaning">${n.en}</div>
+      </div>`).join('');
+    document.querySelectorAll('.name-card').forEach(c=>{
+      c.addEventListener('click',()=>{
+        const nm=NAMES.find(x=>x.n===parseInt(c.dataset.n));
+        if(!nm) return;
+        document.getElementById('nm-num').textContent=`Name ${nm.n} of 99`;
+        document.getElementById('nm-arabic').textContent=nm.ar;
+        document.getElementById('nm-translit').textContent=nm.tr;
+        document.getElementById('nm-meaning').textContent=nm.en;
+        document.getElementById('nm-reflection').textContent=nm.ref;
+        document.getElementById('name-modal').classList.add('open');
+      });
+    });
+  }
+  renderNames(NAMES);
+
+  document.getElementById('names-search').addEventListener('input',function(){
+    const q=this.value.toLowerCase().trim();
+    renderNames(q?NAMES.filter(n=>n.tr.toLowerCase().includes(q)||n.en.toLowerCase().includes(q)||n.ar.includes(q)):NAMES);
+  });
+  document.getElementById('name-modal-close').addEventListener('click',()=>document.getElementById('name-modal').classList.remove('open'));
+  document.getElementById('name-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});
+
+  // ══════════════════════════════════════════════════════════
+  // 4. TASBEEH COUNTER
+  // ══════════════════════════════════════════════════════════
+  const DHIKRS=[
+    {ar:'سُبْحَانَ اللَّهِ',en:'"Glory be to Allah"',target:33},
+    {ar:'الْحَمْدُ لِلَّهِ',en:'"All praise is due to Allah"',target:33},
+    {ar:'اللَّهُ أَكْبَرُ',en:'"Allah is the Greatest"',target:34},
+    {ar:'لَا إِلَهَ إِلَّا اللَّهُ',en:'"There is no god but Allah"',target:100},
+    {ar:'أَسْتَغْفِرُ اللَّهَ',en:'"I seek forgiveness from Allah"',target:100},
+    {ar:'صَلِّ عَلَى النَّبِي',en:'Send blessings on the Prophet ﷺ',target:100},
+  ];
+  let tState={dhikr:0,count:0,sessions:JSON.parse(localStorage.getItem('noorai_tasbeeh')||'[]')};
+
+  const btnRow=document.getElementById('dhikr-btns');
+  DHIKRS.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='dhikr-btn'+(i===0?' active':'');
+    b.textContent=d.en.replace(/['"]/g,'').substring(0,22)+'…';
+    b.addEventListener('click',()=>{
+      tState.dhikr=i; tState.count=0;
+      document.querySelectorAll('.dhikr-btn').forEach((x,j)=>x.classList.toggle('active',j===i));
+      document.getElementById('tasbeeh-arabic').textContent=d.ar;
+      document.getElementById('tasbeeh-meaning').textContent=d.en;
+      updateTasbeeh();
+    });
+    btnRow.appendChild(b);
+  });
+
+  function updateTasbeeh(){
+    const d=DHIKRS[tState.dhikr];
+    const c=document.getElementById('tasbeeh-count');
+    c.textContent=tState.count;
+    document.getElementById('tasbeeh-target').textContent=`of ${d.target}`;
+    const circ=490; const pct=Math.min(tState.count/d.target,1);
+    document.getElementById('ring-fill').style.strokeDashoffset=circ-(circ*pct);
+    if(tState.count>0&&tState.count%d.target===0){
+      UI.Toast.success('ما شاء الله!',`${tState.count} ${DHIKRS[tState.dhikr].en.replace(/['"]/g,'')} completed!`);
+    }
+    // Sessions
+    document.getElementById('tasbeeh-sessions').textContent=
+      tState.sessions.length>0?`Today: ${tState.sessions.reduce((a,b)=>a+b.count,0)} total dhikr`:'';
+  }
+
+  document.getElementById('tasbeeh-tap').addEventListener('click',()=>{
+    tState.count++;
+    const c=document.getElementById('tasbeeh-count');
+    c.classList.add('bump');
+    setTimeout(()=>c.classList.remove('bump'),120);
+    updateTasbeeh();
+  });
+  document.getElementById('tasbeeh-reset').addEventListener('click',()=>{
+    if(tState.count>0){
+      tState.sessions.push({dhikr:tState.dhikr,count:tState.count,t:Date.now()});
+      localStorage.setItem('noorai_tasbeeh',JSON.stringify(tState.sessions.slice(-50)));
+    }
+    tState.count=0; updateTasbeeh();
+  });
+  document.getElementById('tasbeeh-minus').addEventListener('click',()=>{if(tState.count>0){tState.count--;updateTasbeeh();}});
+  document.getElementById('target-33').addEventListener('click',()=>{tState.count=0;DHIKRS[tState.dhikr].target=33;updateTasbeeh();});
+  document.getElementById('target-100').addEventListener('click',()=>{tState.count=0;DHIKRS[tState.dhikr].target=100;updateTasbeeh();});
+  updateTasbeeh();
+
+  // Keyboard shortcut: Space to count
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&!e.target.closest('input,textarea')){
+      e.preventDefault();
+      document.getElementById('tasbeeh-tap').click();
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // 5. HIJRI CALENDAR
+  // ══════════════════════════════════════════════════════════
+  const HIJRI_MONTHS=['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\'ban','Ramadan','Shawwal','Dhul Qa\'dah','Dhul Hijjah'];
+  const HIJRI_MONTHS_AR=['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+  async function loadHijri(){
+    try{
+      const today=new Date();
+      const dd=today.getDate().toString().padStart(2,'0');
+      const mm=(today.getMonth()+1).toString().padStart(2,'0');
+      const yyyy=today.getFullYear();
+      const r=await fetch(`https://api.aladhan.com/v1/gToH/${dd}-${mm}-${yyyy}`);
+      const d=await r.json();
+      const h=d.data.hijri;
+      const monthAr=HIJRI_MONTHS_AR[parseInt(h.month.number)-1]||h.month.ar;
+      document.getElementById('hijri-today').innerHTML=`
+        <div class="hijri-today-arabic">${h.day} ${monthAr} ${h.year}</div>
+        <div class="hijri-today-month">${h.day} ${HIJRI_MONTHS[parseInt(h.month.number)-1]} ${h.year} AH</div>
+        <div class="hijri-today-gregorian">Corresponding to ${today.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>`;
+    }catch{
+      document.getElementById('hijri-today').innerHTML='<div class="hijri-loading">Could not load Hijri date. Check your connection.</div>';
+    }
+  }
+  loadHijri();
+
+  // Important dates 1447 AH
+  const events=[
+    {icon:'🌙',name:'Rajab begins',date:'Jan 1, 2026'},
+    {icon:'🌙',name:'Sha\'ban begins',date:'Jan 31, 2026'},
+    {icon:'⭐',name:'Laylat al-Miraj',date:'Feb 26, 2026'},
+    {icon:'🌙',name:'Ramadan begins',date:'Mar 1, 2026'},
+    {icon:'✨',name:'Laylat al-Qadr (27th Ramadan)',date:'Mar 27, 2026'},
+    {icon:'🎉',name:'Eid al-Fitr',date:'Mar 31, 2026'},
+    {icon:'🕌',name:'Dhul Hijjah begins',date:'May 29, 2026'},
+    {icon:'📅',name:'Day of Arafah',date:'Jun 7, 2026'},
+    {icon:'🎊',name:'Eid al-Adha',date:'Jun 8, 2026'},
+    {icon:'🌙',name:'Islamic New Year 1448 AH',date:'Jun 27, 2026'},
+  ];
+  document.getElementById('hijri-events-list').innerHTML=events.map(e=>`
+    <div class="event-item">
+      <div class="event-icon">${e.icon}</div>
+      <div>
+        <div class="event-name">${e.name}</div>
+        <div class="event-date">${e.date}</div>
+      </div>
+    </div>`).join('');
+});
+</script>
+</body>
+</html>

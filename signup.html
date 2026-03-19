@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — NoorAI</title>
+<meta name="description" content="Join NoorAI — Your Islamic AI Companion. Free forever.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+<div class="mesh-overlay"></div>
+
+<div class="auth-page">
+  <div class="auth-layout">
+
+    <!-- Left Visual Panel -->
+    <div class="auth-visual">
+      <div class="auth-visual-logo">
+        <div class="logo">
+          <div class="logo-mark">ن</div>
+          <span class="logo-text">Noor<span>AI</span></span>
+        </div>
+      </div>
+      <div class="auth-visual-content">
+        <div class="auth-visual-arabic">وَمَنْ يَتَّقِ اللَّهَ يَجْعَلْ لَهُ مَخْرَجًا</div>
+        <h2 class="auth-visual-tagline">Begin Your<br><em>Spiritual Journey</em></h2>
+        <div class="auth-visual-features">
+          <div class="auth-visual-feature">Free forever — no credit card needed</div>
+          <div class="auth-visual-feature">15 AI conversations/month on free plan</div>
+          <div class="auth-visual-feature">Full Quran reader with audio</div>
+          <div class="auth-visual-feature">Prayer times for your location</div>
+        </div>
+      </div>
+      <svg class="auth-visual-crescent" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 10 C55 10 20 45 20 90 C20 135 55 170 100 170 C80 155 67 135 67 110 C67 75 88 47 120 40 C114 36 107 33 100 10Z" stroke="#c9a227" stroke-width="1.5" fill="none"/>
+        <circle cx="140" cy="60" r="8" stroke="#c9a227" stroke-width="1" fill="none"/>
+        <circle cx="125" cy="42" r="4" stroke="#c9a227" stroke-width="0.8" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-header">
+        <h1 class="auth-form-title">Create account</h1>
+        <p class="auth-form-sub">Already have one? <a href="/login">Sign in</a></p>
+      </div>
+
+      <div id="signup-error" class="auth-error hidden" role="alert">
+        <span>⚠</span> <span id="signup-error-msg"></span>
+      </div>
+      <div id="signup-success" class="auth-success hidden" role="status">
+        <span>✓</span> Account created! Redirecting…
+      </div>
+
+      <form id="signup-form" class="auth-form" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="name">Full Name <span class="req">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input class="form-input" type="text" id="name" name="name"
+              placeholder="Your full name" autocomplete="name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address <span class="req">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉</span>
+            <input class="form-input" type="email" id="email" name="email"
+              placeholder="you@example.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password <span class="req">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="password" name="password"
+              placeholder="Min. 8 characters" autocomplete="new-password" required minlength="8">
+            <button type="button" class="input-action" id="toggle-password" aria-label="Show password">👁</button>
+          </div>
+          <!-- Password strength -->
+          <div class="password-strength" id="password-strength" style="display:none">
+            <div class="strength-bars">
+              <div class="strength-bar" id="bar-1"></div>
+              <div class="strength-bar" id="bar-2"></div>
+              <div class="strength-bar" id="bar-3"></div>
+              <div class="strength-bar" id="bar-4"></div>
+            </div>
+            <span class="strength-label" id="strength-label"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Confirm Password <span class="req">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="confirm-password" name="confirm-password"
+              placeholder="Re-enter your password" autocomplete="new-password" required>
+          </div>
+        </div>
+
+        <div class="form-check">
+          <input type="checkbox" id="terms" name="terms" required>
+          <label class="form-check-label" for="terms">
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-xl" id="signup-btn">
+          <span class="btn-text">Create Free Account</span>
+        </button>
+
+        <p class="auth-terms">
+          🌙 Free plan includes Quran reader, prayer times &amp; 15 AI conversations/month
+        </p>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Auth.requireGuest();
+
+  const form         = document.getElementById('signup-form');
+  const btn          = document.getElementById('signup-btn');
+  const errorBanner  = document.getElementById('signup-error');
+  const errorMsg     = document.getElementById('signup-error-msg');
+  const successBanner= document.getElementById('signup-success');
+  const strengthWrap = document.getElementById('password-strength');
+
+  function showError(msg) { errorMsg.textContent = msg; errorBanner.classList.remove('hidden'); }
+  function hideError()    { errorBanner.classList.add('hidden'); }
+
+  // Toggle password visibility
+  document.getElementById('toggle-password').addEventListener('click', function() {
+    const input = document.getElementById('password');
+    const show  = input.type === 'text';
+    input.type  = show ? 'password' : 'text';
+    this.textContent = show ? '👁' : '🙈';
+  });
+
+  // Password strength meter
+  document.getElementById('password').addEventListener('input', function() {
+    if (this.value.length > 0) {
+      strengthWrap.style.display = 'block';
+      UI.updatePasswordStrength(this.value, strengthWrap);
+    } else {
+      strengthWrap.style.display = 'none';
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideError();
+    UI.clearAllErrors(form);
+
+    const name     = document.getElementById('name').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm  = document.getElementById('confirm-password').value;
+    const terms    = document.getElementById('terms').checked;
+
+    // Validation
+    let valid = true;
+    if (!name) { UI.showFieldError(document.getElementById('name'), 'Name is required'); valid = false; }
+    if (!email) { UI.showFieldError(document.getElementById('email'), 'Email is required'); valid = false; }
+    if (password.length < 8) { UI.showFieldError(document.getElementById('password'), 'Password must be at least 8 characters'); valid = false; }
+    if (password !== confirm) { UI.showFieldError(document.getElementById('confirm-password'), 'Passwords do not match'); valid = false; }
+    if (!terms) { showError('Please accept the Terms of Service to continue'); valid = false; }
+    if (!valid) return;
+
+    UI.setButtonLoading(btn, true, 'Creating account…');
+
+    const result = Auth.register(name, email, password);
+
+    if (result.success) {
+      successBanner.classList.remove('hidden');
+      UI.Toast.success('Welcome to NoorAI! 🌙', `As-Salamu Alaykum, ${result.user.name.split(' ')[0]}!`);
+      setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
+    } else {
+      UI.setButtonLoading(btn, false);
+      showError(result.error);
+    }
+  });
+
+  form.querySelectorAll('input').forEach(i => i.addEventListener('input', hideError));
+});
+</script>
+</body>
+</html>

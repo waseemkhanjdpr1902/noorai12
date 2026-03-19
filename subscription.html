@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plans & Pricing — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/subscription.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+<div class="mesh-overlay"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/chat" class="sidebar-link"><span class="icon">💬</span> AI Chat</a>
+      <a href="/quran" class="sidebar-link"><span class="icon">📖</span> Quran Reader</a>
+      <a href="/hadith" class="sidebar-link"><span class="icon">📜</span> Hadith Library</a>
+      <a href="/tools" class="sidebar-link"><span class="icon">🧰</span> Islamic Tools</a>
+      <span class="sidebar-section">Account</span>
+      <a href="/subscription" class="sidebar-link active"><span class="icon">⭐</span> Upgrade</a>
+      <a href="/profile" class="sidebar-link"><span class="icon">👤</span> Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Loading…</div>
+          <div class="user-plan" id="sidebar-plan"></div>
+        </div>
+        <button class="btn-icon" data-action="logout" title="Sign out">⬡</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <main class="app-main">
+    <header class="app-header">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Menu">☰</button>
+      <span class="app-header-title">Plans & Pricing</span>
+    </header>
+
+    <div class="app-content pricing-page">
+      <div class="container">
+
+        <!-- Header -->
+        <div class="section-header center reveal" style="margin-bottom:2.5rem">
+          <div class="section-label">Choose Your Path</div>
+          <h1 class="section-title">Unlock Deeper <em style="color:var(--gold);font-style:normal">Spiritual Guidance</em></h1>
+          <p class="section-sub">
+            Every Muslim deserves access to Islamic knowledge. Start free, upgrade when you're ready.
+          </p>
+        </div>
+
+        <!-- Billing toggle -->
+        <div class="billing-toggle-wrap reveal">
+          <span id="label-monthly" style="color:var(--cream)">Monthly</span>
+          <label class="toggle-switch" aria-label="Billing period">
+            <input type="checkbox" id="billing-toggle">
+            <span class="toggle-track"></span>
+          </label>
+          <span id="label-annual" style="color:var(--text-muted)">Annual <span class="annual-save">SAVE 35%</span></span>
+        </div>
+
+        <!-- Current plan note -->
+        <div id="current-plan-note" style="text-align:center;margin-bottom:1.5rem;font-family:var(--font-ui);font-size:0.85rem;color:var(--text-muted)"></div>
+
+        <!-- Pricing cards -->
+        <div class="pricing-cards reveal">
+
+          <!-- FREE -->
+          <div class="pricing-card" id="card-free">
+            <div class="plan-icon">🌙</div>
+            <div class="plan-name">Nur</div>
+            <div class="plan-tagline">Essential Islamic tools, forever free</div>
+            <div class="plan-price-block">
+              <div class="plan-price-row">
+                <span class="plan-currency">₹</span>
+                <span class="plan-amount">0</span>
+              </div>
+              <div class="plan-period">Free forever</div>
+            </div>
+            <div class="plan-divider-line"></div>
+            <div class="plan-features-list">
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>15 AI conversations/month</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Full Quran reader (all 114 Surahs)</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Prayer times for your location</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Audio recitation (4 reciters)</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Bookmark ayahs</div>
+              <div class="plan-feature locked"><div class="plan-feature-check">✕</div>Habit tracker & streak insights</div>
+              <div class="plan-feature locked"><div class="plan-feature-check">✕</div>Dream interpretation</div>
+              <div class="plan-feature locked"><div class="plan-feature-check">✕</div>Islamic finance calculator</div>
+            </div>
+            <div class="plan-cta">
+              <button class="btn-plan-secondary" id="btn-free" disabled>
+                Current Plan
+              </button>
+              <div class="current-plan-badge show" id="badge-free">✓ Your current plan</div>
+            </div>
+          </div>
+
+          <!-- PRO (recommended) -->
+          <div class="pricing-card recommended" id="card-pro">
+            <div class="plan-ribbon">Most Popular</div>
+            <div class="plan-icon">⭐</div>
+            <div class="plan-name">Hidayah</div>
+            <div class="plan-tagline">Unlimited guidance — the complete Islamic companion</div>
+            <div class="plan-price-block" id="pro-price-block">
+              <div class="plan-price-row">
+                <span class="plan-currency">₹</span>
+                <span class="plan-amount" id="pro-amount">399</span>
+                <span class="plan-period">/month</span>
+              </div>
+              <div class="plan-original hidden" id="pro-original">₹4,788/year</div>
+              <div class="plan-annual-note hidden" id="pro-annual-note">₹3,099 billed annually</div>
+            </div>
+            <div class="plan-divider-line"></div>
+            <div class="plan-features-list">
+              <div class="plan-feature"><div class="plan-feature-check">✓</div><strong>Unlimited</strong> AI conversations</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Full Quran reader + Tafsir</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Prayer times & Hijri calendar</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Daily habit tracker & streaks</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Dream interpretation (Islamic)</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Islamic finance calculator (Zakat, Riba)</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Priority support</div>
+            </div>
+            <div class="plan-cta">
+              <button class="btn-plan-primary" id="btn-pro" data-plan="pro_monthly">
+                Upgrade to Hidayah ✦
+              </button>
+              <div class="current-plan-badge" id="badge-pro">✓ Your current plan</div>
+            </div>
+          </div>
+
+          <!-- LIFETIME -->
+          <div class="pricing-card" id="card-lifetime">
+            <div class="plan-icon">🏅</div>
+            <div class="plan-name">Barakah</div>
+            <div class="plan-tagline">One-time payment, lifetime access — no recurring charges ever</div>
+            <div class="plan-price-block">
+              <div class="plan-price-row">
+                <span class="plan-currency">₹</span>
+                <span class="plan-amount">7,999</span>
+              </div>
+              <div class="plan-period">One-time payment</div>
+              <div class="plan-original" style="display:block">Saves ₹4,788+ over 2 years</div>
+            </div>
+            <div class="plan-divider-line"></div>
+            <div class="plan-features-list">
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Everything in Hidayah Pro</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Lifetime access — pay once</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>All future features included</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>Early access to new tools</div>
+              <div class="plan-feature"><div class="plan-feature-check">✓</div>VIP support channel</div>
+            </div>
+            <div class="plan-cta">
+              <button class="btn-plan-primary" id="btn-lifetime" data-plan="lifetime" style="background:linear-gradient(135deg,#7a5c00,#c9a227)">
+                Get Lifetime Access 🏅
+              </button>
+              <div class="current-plan-badge" id="badge-lifetime">✓ Your current plan</div>
+            </div>
+          </div>
+
+        </div><!-- /pricing-cards -->
+
+        <!-- Guarantee -->
+        <div class="guarantee-banner reveal">
+          <div class="guarantee-icon">🛡</div>
+          <div class="guarantee-text">
+            <strong>100% Satisfaction Guarantee</strong><br>
+            Secured by Razorpay. If you're not satisfied within 7 days, contact us for a full refund — no questions asked.
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="pricing-faq reveal">
+          <h2 class="pricing-faq-title">Frequently Asked Questions</h2>
+          <div id="faq-list"></div>
+        </div>
+
+        <!-- Payment history -->
+        <div id="payment-history-section" style="margin-top:3rem;display:none">
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:1rem">Payment History</h3>
+          <div id="payment-history-list"></div>
+        </div>
+
+      </div><!-- /container -->
+    </div><!-- /app-content -->
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/payment.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!Auth.requireAuth('/subscription.html')) return;
+
+  const user       = Auth.getCurrentUser();
+  const isAnnual   = () => document.getElementById('billing-toggle').checked;
+
+  // ── Reflect current plan
+  function updatePlanUI() {
+    const plan = user.plan || 'free';
+    ['free','pro','lifetime'].forEach(p => {
+      const btn   = document.getElementById(`btn-${p}`);
+      const badge = document.getElementById(`badge-${p}`);
+      if (plan === p) {
+        btn.disabled   = true;
+        btn.textContent = '✓ Current Plan';
+        badge.classList.add('show');
+      } else {
+        badge.classList.remove('show');
+      }
+    });
+    const planName = CONFIG.PLANS[plan]?.displayName || 'Free';
+    document.getElementById('current-plan-note').textContent = `Your current plan: ${planName}`;
+
+    // Disable free btn always (it's free)
+    if (plan !== 'free') document.getElementById('btn-free').textContent = 'Free Plan';
+  }
+  updatePlanUI();
+
+  // ── Billing toggle
+  document.getElementById('billing-toggle').addEventListener('change', function() {
+    const annual = this.checked;
+    // Update Pro pricing
+    document.getElementById('pro-amount').textContent = annual ? '259' : '399';
+    document.getElementById('pro-original').classList.toggle('hidden', !annual);
+    document.getElementById('pro-annual-note').classList.toggle('hidden', !annual);
+    // Update plan key for button
+    document.getElementById('btn-pro').dataset.plan = annual ? 'pro_annual' : 'pro_monthly';
+    // Labels
+    document.getElementById('label-monthly').style.color = annual ? 'var(--text-muted)' : 'var(--cream)';
+    document.getElementById('label-annual').style.color  = annual ? 'var(--cream)'      : 'var(--text-muted)';
+  });
+
+  // ── Payment buttons
+  document.getElementById('btn-pro').addEventListener('click', function() {
+    if (this.disabled) return;
+    Payment.initiatePayment(this.dataset.plan, this);
+  });
+  document.getElementById('btn-lifetime').addEventListener('click', function() {
+    if (this.disabled) return;
+    Payment.initiatePayment('lifetime', this);
+  });
+
+  // ── FAQ
+  const faqs = [
+    { q: 'Can I cancel my subscription at any time?', a: 'Yes, absolutely. You can cancel anytime from your account settings. Your access continues until the end of the billing period.' },
+    { q: 'Is my payment information secure?', a: 'Yes. All payments are processed by Razorpay, one of India\'s most trusted payment gateways. We never store your card details.' },
+    { q: 'What happens to my data if I downgrade?', a: 'Your data (conversations, bookmarks, prayer settings) is always preserved. You simply lose access to premium features.' },
+    { q: 'Is the Quran content authentic and correctly sourced?', a: 'Yes. We use the Uthmani script for Arabic, and all translations are from verified scholarly editions (Saheeh International, Pickthall, etc.).' },
+    { q: 'Will NoorAI replace a qualified Islamic scholar?', a: 'No — and it should not. NoorAI is an educational tool designed to guide you to the right resources and scholarly opinions. Always consult a qualified Mufti or Alim for personal religious matters.' },
+    { q: 'Do you offer a student or zakat discount?', a: 'We\'re working on a verified student discount. Contact us and we\'ll do our best to help make NoorAI accessible to you.' },
+  ];
+
+  document.getElementById('faq-list').innerHTML = faqs.map(f => `
+    <div style="border-bottom:1px solid var(--navy-border);padding:1.25rem 0">
+      <h4 style="font-family:var(--font-ui);font-size:0.95rem;color:var(--cream);margin-bottom:0.5rem;cursor:pointer" class="faq-q">
+        <span style="color:var(--gold);margin-right:0.5rem">✦</span>${f.q}
+      </h4>
+      <p style="font-family:var(--font-ui);font-size:0.88rem;color:var(--text-muted);line-height:1.6;padding-left:1.1rem">${f.a}</p>
+    </div>`).join('');
+
+  // ── Payment history
+  const history = Payment.getPaymentHistory();
+  if (history.length > 0) {
+    const histEl = document.getElementById('payment-history-section');
+    histEl.style.display = 'block';
+    document.getElementById('payment-history-list').innerHTML = history.map(p => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:10px;margin-bottom:0.5rem;font-family:var(--font-ui);font-size:0.85rem">
+        <div>
+          <div style="color:var(--cream)">${p.planName}</div>
+          <div style="color:var(--text-faint);font-size:0.75rem">${UI.formatDate(p.date)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:var(--gold)">${Payment.formatAmount(p.amount)}</div>
+          <div style="color:var(--text-faint);font-size:0.72rem">${p.paymentId?.substring(0,16)}…</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Logout
+  document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      UI.showModal({ title: 'Sign Out', body: 'Are you sure?', actions: [
+        { id: 'cancel', label: 'Cancel', class: 'btn-secondary', onClick: UI.closeModal },
+        { id: 'logout', label: 'Sign Out', class: 'btn-danger', onClick: Auth.logout },
+      ]});
+    });
+  });
+});
+</script>
+</body>
+</html>

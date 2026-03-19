@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#080d1a"/>
+  <!-- Geometric octagram pattern -->
+  <g stroke="#c9a227" stroke-width="0.8" fill="none" opacity="0.3">
+    <polygon points="100,20 120,80 180,80 135,115 152,175 100,140 48,175 65,115 20,80 80,80" />
+    <circle cx="100" cy="100" r="60" />
+    <circle cx="100" cy="100" r="75" />
+  </g>
+  <!-- Crescent moon -->
+  <path d="M100 45 C72 45 50 67 50 95 C50 123 72 145 100 145 C85 132 76 116 76 98 C76 72 93 50 116 46 C111 45 106 45 100 45Z" fill="#c9a227" opacity="0.9"/>
+  <!-- Arabic Nun letter -->
+  <text x="100" y="118" text-anchor="middle" fill="#080d1a" font-size="52" font-family="'Noto Naskh Arabic', serif" font-weight="600">ن</text>
+</svg>

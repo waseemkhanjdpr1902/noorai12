@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — NoorAI</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vars.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<div class="geo-pattern"></div>
+<div class="mesh-overlay"></div>
+
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo">
+        <div class="logo-mark">ن</div>
+        <span class="logo-text">Noor<span>AI</span></span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="sidebar-section">Main</span>
+      <a href="/dashboard" class="sidebar-link active">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      <a href="/chat" class="sidebar-link">
+        <span class="icon">💬</span> AI Chat
+      </a>
+      <a href="/quran" class="sidebar-link">
+        <span class="icon">📖</span> Quran Reader
+      </a>
+      <a href="/hadith" class="sidebar-link">📜 Hadith Library</a>
+      <a href="/tools" class="sidebar-link">🧰 Islamic Tools</a>
+
+      <span class="sidebar-section">Tools</span>
+      <a href="/subscription" class="sidebar-link">
+        <span class="icon">⭐</span> Upgrade Plan
+      </a>
+      <a href="/profile" class="sidebar-link">
+        <span class="icon">👤</span> Profile
+      </a>
+
+      <span class="sidebar-section">Info</span>
+      <a href="/" class="sidebar-link">
+        <span class="icon">🏡</span> Home
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-name">Loading…</div>
+          <div class="user-plan" id="sidebar-plan"></div>
+        </div>
+        <button class="btn-icon" data-action="logout" title="Sign out" aria-label="Sign out">⬡</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main content -->
+  <main class="app-main">
+    <header class="app-header">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle menu">☰</button>
+      <span class="app-header-title">Dashboard</span>
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <span class="badge badge-muted ai-messages-left" id="msg-count" style="font-size:0.72rem"></span>
+        <a href="/chat" class="btn btn-primary btn-sm">New Chat ✦</a>
+      </div>
+    </header>
+
+    <div class="app-content">
+      <div class="dashboard-grid">
+
+        <!-- Greeting Banner -->
+        <div class="col-12">
+          <div class="greeting-banner reveal">
+            <div class="greeting-time" id="greeting-text">Good morning</div>
+            <h1 class="greeting-name" id="greeting-name">As-Salamu Alaykum 🌙</h1>
+            <p class="greeting-sub">
+              <span id="hijri-date">Loading Hijri date…</span> &nbsp;•&nbsp;
+              <em id="daily-hadith" style="font-style:italic;color:var(--gold)"></em>
+            </p>
+            <div class="greeting-actions">
+              <a href="/chat" class="btn btn-primary">Ask NoorAI ✦</a>
+              <a href="/quran" class="btn btn-secondary">Read Quran 📖</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="col-3 reveal reveal-delay-1">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon">💬</div>
+              <span id="plan-badge" class="badge badge-muted">Free</span>
+            </div>
+            <div class="stat-card-label">AI Messages Left</div>
+            <div class="stat-card-value" id="messages-remaining">15</div>
+            <div class="stat-card-sub">This month</div>
+          </div>
+        </div>
+
+        <div class="col-3 reveal reveal-delay-2">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon">📿</div>
+            </div>
+            <div class="stat-card-label">Habits Today</div>
+            <div class="stat-card-value" id="habits-done-count">0/7</div>
+            <div class="stat-card-sub">Daily ibadah</div>
+          </div>
+        </div>
+
+        <div class="col-3 reveal reveal-delay-3">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon">📖</div>
+            </div>
+            <div class="stat-card-label">Next Prayer</div>
+            <div class="stat-card-value" id="next-prayer-time" style="font-size:1.4rem">…</div>
+            <div class="stat-card-sub" id="next-prayer">Loading…</div>
+          </div>
+        </div>
+
+        <div class="col-3 reveal reveal-delay-4">
+          <div class="stat-card card-hover" style="cursor:pointer" onclick="window.location.href='/subscription'">
+            <div class="stat-card-header">
+              <div class="stat-card-icon">⭐</div>
+            </div>
+            <div class="stat-card-label">Your Plan</div>
+            <div class="stat-card-value" style="font-size:1.2rem" id="plan-name">Nur Free</div>
+            <div class="stat-card-sub text-gold">Upgrade →</div>
+          </div>
+        </div>
+
+        <!-- Daily Ayah -->
+        <div class="col-8 reveal">
+          <div class="quran-widget">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div>
+                <div class="section-label">Ayah of the Day</div>
+                <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--white);margin:0">Daily Reflection</h3>
+              </div>
+              <a href="/quran" class="btn btn-ghost btn-sm">Read More →</a>
+            </div>
+            <div class="quran-ayah-arabic arabic" id="daily-ayah-arabic">
+              <div class="skeleton skeleton-text" style="height:2.5rem;margin-bottom:0.5rem"></div>
+              <div class="skeleton skeleton-text" style="height:2.5rem;width:70%"></div>
+            </div>
+            <p class="quran-ayah-translation" id="daily-ayah-translation"></p>
+            <span class="quran-ayah-ref" id="daily-ayah-ref"></span>
+          </div>
+        </div>
+
+        <!-- Prayer Times -->
+        <div class="col-4 reveal reveal-delay-1">
+          <div class="prayer-widget">
+            <div class="prayer-widget-header">
+              <span class="prayer-widget-title">🕌 Prayer Times</span>
+              <span class="prayer-widget-date" id="prayer-date">Today</span>
+            </div>
+            <ul class="prayer-list" id="prayer-list">
+              <div class="loading-screen" style="min-height:180px">
+                <div class="spinner spinner-sm"></div>
+              </div>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Habits Tracker -->
+        <div class="col-6 reveal">
+          <div class="habit-widget">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div>
+                <div class="section-label">Daily Tracker</div>
+                <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--white);margin:0">Ibadah Habits</h3>
+              </div>
+              <span class="text-muted" style="font-family:var(--font-ui);font-size:0.78rem" id="habit-progress-label">0/7 completed</span>
+            </div>
+            <div class="progress-bar" style="margin-bottom:1rem">
+              <div class="progress-fill" id="habit-progress-fill" style="width:0%"></div>
+            </div>
+            <div class="habit-list" id="habits-list">
+              <div class="loading-screen" style="min-height:120px"><div class="spinner spinner-sm"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Chats -->
+        <div class="col-6 reveal reveal-delay-2">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div>
+                <div class="section-label">Recent</div>
+                <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--white);margin:0">Conversations</h3>
+              </div>
+              <a href="/chat" class="btn btn-ghost btn-sm">+ New Chat</a>
+            </div>
+            <div id="recent-chats" class="recent-chats"></div>
+          </div>
+        </div>
+
+        <!-- Upgrade prompt (free users only) -->
+        <div class="col-12 hidden" id="upgrade-prompt">
+          <div class="card" style="background:linear-gradient(135deg,rgba(201,162,39,0.08),var(--navy-card));border-color:rgba(201,162,39,0.25);text-align:center;padding:2rem">
+            <div style="font-size:2rem;margin-bottom:0.75rem">🌟</div>
+            <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:0.5rem">Unlock Full Guidance</h3>
+            <p style="font-family:var(--font-ui);font-size:0.88rem;color:var(--text-muted);max-width:480px;margin:0 auto 1.5rem">Upgrade to Hidayah Pro for unlimited AI conversations, advanced Quran tools, habit insights and more — starting at ₹399/month.</p>
+            <a href="/subscription" class="btn btn-primary btn-lg">View Plans & Pricing ✦</a>
+          </div>
+        </div>
+
+      </div><!-- /dashboard-grid -->
+    </div><!-- /app-content -->
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/quran.js"></script>
+<script src="js/prayer.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+/* ============================================================
+   NoorAI — Dashboard Styles
+   ============================================================ */
+
+/* ===== Dashboard Grid ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-5);
+}
+.col-12 { grid-column: span 12; }
+.col-8  { grid-column: span 8; }
+.col-6  { grid-column: span 6; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+
+@media (max-width: 1100px) { .col-8 { grid-column: span 12; } .col-4 { grid-column: span 6; } .col-3 { grid-column: span 6; } }
+@media (max-width: 700px)  { .col-6, .col-4, .col-3 { grid-column: span 12; } }
+
+/* ===== Greeting Banner ===== */
+.greeting-banner {
+  background: linear-gradient(135deg, var(--navy-card), rgba(13,92,58,0.15));
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  position: relative;
+  overflow: hidden;
+}
+.greeting-banner::after {
+  content: 'بِسْمِ اللَّهِ';
+  font-family: var(--font-arabic);
+  font-size: 5rem;
+  color: var(--gold);
+  opacity: 0.04;
+  position: absolute;
+  right: var(--space-6);
+  bottom: -0.5rem;
+  line-height: 1;
+  direction: rtl;
+  pointer-events: none;
+}
+.greeting-time {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: var(--space-2);
+}
+.greeting-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: var(--white);
+  margin-bottom: var(--space-1);
+}
+.greeting-sub {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-5);
+}
+.greeting-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+/* ===== Stat Cards ===== */
+.stat-card {
+  background: var(--navy-card);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: all var(--t-base);
+}
+.stat-card:hover { border-color: rgba(201,162,39,0.25); box-shadow: var(--shadow-gold); transform: translateY(-2px); }
+.stat-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.stat-card-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius);
+  background: var(--gold-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.stat-card-label { font-family: var(--font-ui); font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-card-value { font-family: var(--font-display); font-size: 2rem; color: var(--white); line-height: 1; }
+.stat-card-sub   { font-family: var(--font-ui); font-size: 0.8rem; color: var(--text-muted); }
+.stat-card-trend { font-family: var(--font-ui); font-size: 0.78rem; color: var(--success); }
+.stat-card-trend.down { color: var(--error); }
+
+/* ===== Prayer Times Widget ===== */
+.prayer-widget {
+  background: var(--navy-card);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.prayer-widget-header {
+  background: linear-gradient(135deg, var(--emerald), rgba(13,92,58,0.5));
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.prayer-widget-title { font-family: var(--font-display); font-size: 0.95rem; color: var(--white); }
+.prayer-widget-date  { font-family: var(--font-ui); font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+.prayer-list { list-style: none; }
+.prayer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid rgba(30,47,82,0.5);
+  transition: background var(--t-base);
+}
+.prayer-item:last-child { border-bottom: none; }
+.prayer-item.active { background: var(--gold-pale); }
+.prayer-item.active .prayer-name { color: var(--gold); }
+.prayer-name { font-family: var(--font-ui); font-size: 0.88rem; color: var(--cream-dim); }
+.prayer-arabic { font-family: var(--font-arabic); font-size: 0.9rem; direction: rtl; color: var(--text-muted); }
+.prayer-time { font-family: var(--font-display); font-size: 0.9rem; color: var(--white); }
+.next-prayer-badge { display: flex; align-items: center; gap: var(--space-1); }
+
+/* ===== Quran Quick Widget ===== */
+.quran-widget {
+  background: linear-gradient(135deg, var(--navy-card), rgba(8,13,26,0.5));
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+.quran-ayah-arabic {
+  font-family: var(--font-arabic);
+  font-size: 1.4rem;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.2;
+  color: var(--cream);
+  margin-bottom: var(--space-3);
+  padding: var(--space-4);
+  background: rgba(201,162,39,0.04);
+  border-radius: var(--radius);
+  border: 1px solid rgba(201,162,39,0.1);
+}
+.quran-ayah-translation {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--cream-dim);
+  margin-bottom: var(--space-2);
+}
+.quran-ayah-ref {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+
+/* ===== Habits / Streak Widget ===== */
+.habit-widget { background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: var(--radius-md); padding: var(--space-5); }
+.habit-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.habit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.habit-checkbox {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--navy-border);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all var(--t-base);
+}
+.habit-checkbox.checked { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.habit-name { flex: 1; font-family: var(--font-ui); font-size: 0.88rem; color: var(--cream-dim); }
+.habit-streak { font-family: var(--font-display); font-size: 0.8rem; color: var(--gold); }
+.streak-fire { font-size: 0.9rem; }
+
+/* ===== Recent Chat Widget ===== */
+.recent-chats { display: flex; flex-direction: column; gap: var(--space-2); }
+.recent-chat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  transition: all var(--t-base);
+  cursor: pointer;
+  text-decoration: none;
+}
+.recent-chat-item:hover { background: rgba(255,255,255,0.03); border-color: var(--navy-border); }
+.chat-item-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+.chat-item-text { font-family: var(--font-ui); font-size: 0.85rem; color: var(--cream-dim); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chat-item-time { font-family: var(--font-ui); font-size: 0.72rem; color: var(--text-faint); white-space: nowrap; }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .app-content { padding: var(--space-4); }
+}
