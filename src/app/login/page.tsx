@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { LogIn, Mail, Lock, Github, Chrome, ArrowRight, Loader2 } from "lucide-react";
+import { LogIn, Mail, Lock, Chrome, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/services/supabase";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -34,15 +34,12 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    const { error } = await supabase.auth.signInWithOAuth({
+  const handleSocialLogin = async (provider: 'google') => {
+    setError(null);
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'select_account',
-        },
       },
     });
 
@@ -73,15 +70,9 @@ export default function LoginPage() {
           <div className="space-y-4 mb-10">
             <button 
               onClick={() => handleSocialLogin('google')}
-              className="w-full flex items-center justify-center gap-4 py-4 glass border border-gold/20 rounded-2xl text-parchment hover:bg-gold hover:text-ink transition-all font-bold shadow-lg shadow-gold/5"
+              className="w-full flex items-center justify-center gap-4 py-4 gold-gradient border border-gold/20 rounded-2xl text-ink hover:scale-[1.02] transition-all font-bold shadow-lg shadow-gold/20"
             >
               <Chrome size={20} /> Continue with Google
-            </button>
-            <button 
-              onClick={() => handleSocialLogin('github')}
-              className="w-full flex items-center justify-center gap-4 py-4 glass border border-white/5 rounded-2xl text-parchment/60 hover:text-parchment hover:bg-white/10 transition-all font-medium text-sm"
-            >
-              <Github size={18} /> Continue with GitHub
             </button>
           </div>
 
@@ -140,7 +131,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-10 text-center text-parchment/40 text-sm">
-            Don&apos;t have an account? <Link href="/signup" className="text-gold hover:underline">Sign up for free</Link>
+            Don&apos;t have an account? <Link href="/signup" className="text-gold font-bold hover:underline">Sign up for free</Link>
           </p>
         </motion.div>
       </div>

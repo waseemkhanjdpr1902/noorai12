@@ -7,12 +7,12 @@ import {
   MessageCircle, Info, Quote, CheckCircle2, X,
   ArrowRight, Globe, Shield, Heart
 } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 // Initialize Gemini
-const ai = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
 const DAWAH_CONCEPTS = [
   {
@@ -82,11 +82,15 @@ export default function DawahPage() {
     setIsLoading(true);
 
     try {
-      const response = await ai.getGenerativeModel({
+      const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-      }).generateContent(userMessage);
+        contents: [{ role: "user", parts: [{ text: userMessage }] }],
+        config: {
+          systemInstruction: "You are a wise and kind Dawah companion. Answer questions about Islam with wisdom, evidence from Quran and Sunnah, and a gentle tone. Keep responses scannable and profound."
+        }
+      });
 
-      const aiContent = response.response.text() || "I apologize, I'm having trouble processing that right now. Please try again.";
+      const aiContent = response.text || "I apologize, I'm having trouble processing that right now. Please try again.";
       setMessages(prev => [...prev, { role: 'ai', content: aiContent }]);
     } catch (error) {
       console.error("Gemini Error:", error);
@@ -128,7 +132,7 @@ export default function DawahPage() {
                 Ask the <span className="text-gold">Companion</span>
               </h2>
               <p className="text-parchment/60 leading-relaxed">
-                Whether you're a student of knowledge, a seeker of truth, or someone curious about Islam, 
+                Whether you&apos;re a student of knowledge, a seeker of truth, or someone curious about Islam, 
                 our AI Companion is trained to provide authentic insights into the faith.
               </p>
               

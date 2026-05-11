@@ -20,12 +20,12 @@ export default function QuranCard({ surah }: QuranCardProps) {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/surah/${surah.slug}`);
+    router.push(`/quran/${surah.slug}`);
   };
 
   const handlePlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/surah/${surah.slug}?autoplay=true`);
+    router.push(`/quran/${surah.slug}?autoplay=true`);
   };
 
   return (

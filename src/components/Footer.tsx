@@ -1,15 +1,15 @@
 "use client";
 
-import { Sparkles, Mail, Github, Twitter, Instagram, Heart, Globe, ArrowUpRight } from "lucide-react";
+import { Sparkles, Mail, Twitter, Instagram, Heart, Globe, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
   const links = {
     explore: [
       { name: "Digital Quran", href: "/quran" },
-      { name: "Names of Allah", href: "/names-of-allah" },
-      { name: "Dawah Assistant", href: "/dawah" },
-      { name: "Prayer Times", href: "/prayer-times" },
+      { name: "Hadith Library", href: "/hadith" },
+      { name: "Tafseer & AI", href: "/tafseer" },
+      { name: "Islamic Science", href: "/islamic-science" },
     ],
     tools: [
       { name: "Supplications", href: "/dua" },
@@ -45,7 +45,6 @@ export default function Footer() {
             <div className="flex items-center gap-4">
               <SocialLink icon={<Twitter size={18} />} href="#" />
               <SocialLink icon={<Instagram size={18} />} href="#" />
-              <SocialLink icon={<Github size={18} />} href="#" />
             </div>
           </div>
 

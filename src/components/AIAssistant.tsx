@@ -46,12 +46,7 @@ export default function AIAssistant() {
     setIsLoading(true);
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("Gemini API key is missing. Please configure it in the settings.");
-      }
-
-      const genAI = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
       
       // Prepare history for the model
       const history = newMessages.map(msg => ({
@@ -59,7 +54,7 @@ export default function AIAssistant() {
         parts: [{ text: msg.content }]
       }));
 
-      const response = await genAI.models.generateContent({
+      const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: history,
         config: {

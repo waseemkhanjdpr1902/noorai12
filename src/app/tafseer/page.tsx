@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Search, BookOpen, Sparkles, MessageSquare, Info } from "lucide-react";
+import { Search, BookOpen, Sparkles, MessageSquare, Info, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 export default function TafseerPage() {
   return (
@@ -63,24 +64,35 @@ export default function TafseerPage() {
 
         {/* Classical Works */}
         <div className="space-y-12">
-          <h2 className="text-3xl font-display text-parchment">Classical <span className="text-gold">Works</span></h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-display text-parchment">Classical <span className="text-gold">Works</span></h2>
+            <Link href="/quran" className="text-gold text-[10px] font-bold uppercase tracking-widest hover:underline flex items-center gap-2">
+              Select Surah to Begin <ArrowRight size={14} />
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Tafsir Ibn Kathir", author: "Imam Ibn Kathir", period: "14th Century", desc: "One of the most widely accepted explanations based on Hadith and verse-to-verse analysis." },
-              { title: "Tafsir Al-Jalalayn", author: "Al-Mahalli & Al-Suyuti", period: "15th Century", desc: "A concise and highly influential commentary known for its brevity and clarity." },
-              { title: "Tafsir Al-Tabari", author: "Imam Al-Tabari", period: "9th Century", desc: "The 'Mother of Tafsirs', providing exhaustive linguistic and historical documentation." },
+              { 
+                title: "Tafsir Ibn Kathir", 
+                author: "Imam Ibn Kathir", 
+                period: "14th Century", 
+                desc: "The most widely accepted explanation based on Hadith. Available for every verse in our Digital Quran study mode.",
+                href: "/quran"
+              },
+              { title: "Tafsir Al-Jalalayn", author: "Al-Mahalli & Al-Suyuti", period: "15th Century", desc: "A concise and highly influential commentary known for its brevity and clarity.", href: "/quran" },
+              { title: "Tafsir Al-Tabari", author: "Imam Al-Tabari", period: "9th Century", desc: "The 'Mother of Tafsirs', providing exhaustive linguistic and historical documentation.", href: "/quran" },
             ].map((work, i) => (
-              <div key={i} className="glass p-8 rounded-[32px] border-white/5 hover:border-gold/20 transition-all group">
+              <Link key={i} href={work.href} className="glass p-8 rounded-[32px] border-white/5 hover:border-gold/20 transition-all group block">
                 <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-gold mb-6 group-hover:bg-gold group-hover:text-ink transition-colors">
                   <BookOpen size={24} />
                 </div>
                 <h3 className="text-xl font-display text-parchment mb-2">{work.title}</h3>
                 <p className="text-gold/60 text-[10px] uppercase tracking-widest mb-4">{work.author} • {work.period}</p>
                 <p className="text-parchment/40 text-sm leading-relaxed mb-8">{work.desc}</p>
-                <button className="text-gold text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:underline">
-                  Read Now <Info size={14} />
-                </button>
-              </div>
+                <div className="text-gold text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                  Start Study <Info size={14} />
+                </div>
+              </Link>
             ))}
           </div>
         </div>

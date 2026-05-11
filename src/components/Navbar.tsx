@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, BookOpen, Heart, Sparkles, Menu, X, LayoutDashboard, LogIn, Book, TrendingUp, Landmark, Clock, MapPin, Globe, Compass } from "lucide-react";
+import { Search, BookOpen, Heart, Sparkles, Menu, X, LayoutDashboard, LogIn, Book, TrendingUp, Landmark, Clock, MapPin, Globe, Compass, Atom } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 
@@ -17,11 +17,11 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Quran", href: "/quran", icon: Book },
-    { name: "Dua", href: "/dua", icon: Heart },
-    { name: "Dawah", href: "/dawah", icon: Globe },
+    { name: "Hadith", href: "/hadith", icon: BookOpen },
+    { name: "Tafseer", href: "/tafseer", icon: Sparkles },
+    { name: "Science", href: "/islamic-science", icon: Atom },
     { name: "Zakat", href: "/zakat", icon: Landmark },
-    { name: "Prayer", href: "/prayer-times", icon: Clock },
-    { name: "More", href: "/#tools", icon: Menu },
+    { name: "Dawah", href: "/dawah", icon: Globe },
   ];
 
   return (
