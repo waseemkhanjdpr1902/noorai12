@@ -1,114 +1,106 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { RotateCcw, Plus, Minus, Settings, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { RotateCcw, Zap, Sparkles, ChevronRight } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+const REMEMBRANCES = [
+  { ar: "سُبْحَانَ ٱللَّٰهِ", en: "SubhanAllah", mean: "Glory be to Allah", target: 33 },
+  { ar: "ٱلْحَمْدُ لِلَّٰهِ", en: "Alhamdulillah", mean: "All praise is due to Allah", target: 33 },
+  { ar: "ٱللَّٰهُ أَكْبَرُ", en: "Allahu Akbar", mean: "Allah is the Greatest", target: 34 },
+];
 
 export default function TasbihPage() {
   const [count, setCount] = useState(0);
-  const [target, setTarget] = useState(33);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [vibrateEnabled, setVibrateEnabled] = useState(true);
+  const [activeRemembrance, setActiveRemembrance] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const increment = () => {
+  const increment = useCallback(() => {
     setCount(prev => prev + 1);
-    if (soundEnabled) {
-      const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
-      audio.volume = 0.2;
-      audio.play().catch(() => {});
-    }
-    if (vibrateEnabled && navigator.vibrate) {
+    setTotalCount(prev => prev + 1);
+    
+    // Add haptic feedback if available
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(50);
     }
-  };
+  }, []);
 
   const reset = () => {
-    if (confirm("Are you sure you want to reset the counter?")) {
-      setCount(0);
-    }
+    setCount(0);
   };
 
+  const nextDhikir = () => {
+    setActiveRemembrance((prev) => (prev + 1) % REMEMBRANCES.length);
+    setCount(0);
+  };
+
+  const current = REMEMBRANCES[activeRemembrance];
+
   return (
-    <main className="min-h-screen bg-ink">
+    <main className="min-h-screen bg-ink" onClick={increment}>
+      <Navbar />
       
-      <div className="pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center">
-        {/* Header */}
-        <div className="text-center mb-24">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-gold font-medium tracking-[0.4em] uppercase text-xs mb-6 block"
-          >
-            Remembrance
-          </motion.span>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-8xl font-display text-parchment mb-8 leading-tight"
-          >
-            Digital <span className="text-gold italic">Tasbih</span>
-          </motion.h1>
-        </div>
-
-        {/* Counter UI */}
-        <div className="relative w-full max-w-md aspect-square flex flex-col items-center justify-center">
-          {/* Background Ring */}
-          <div className="absolute inset-0 rounded-full border-[20px] border-white/5" />
-          <motion.div 
-            className="absolute inset-0 rounded-full border-[20px] border-gold/20"
-            style={{ 
-              clipPath: `conic-gradient(from 0deg, white ${ (count % target) / target * 100 }%, transparent 0)` 
-            }}
-          />
-
-          {/* Main Counter Button */}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={increment}
-            className="w-64 h-64 rounded-full glass border-gold/20 flex flex-col items-center justify-center shadow-2xl shadow-gold/10 group relative z-10"
-          >
-            <span className="text-gold/40 text-[10px] uppercase tracking-widest mb-2">SubhanAllah</span>
-            <span className="text-8xl font-mono text-parchment font-bold">{count}</span>
-            <span className="text-gold/40 text-[10px] uppercase tracking-widest mt-2">Target: {target}</span>
-            
-            <div className="absolute inset-0 rounded-full bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </motion.button>
-
-          {/* Secondary Controls */}
-          <div className="absolute -bottom-12 flex gap-6">
-            <button 
-              onClick={reset}
-              className="w-14 h-14 rounded-full glass flex items-center justify-center text-parchment/30 hover:text-gold transition-colors"
-              title="Reset"
-            >
-              <RotateCcw size={24} />
-            </button>
-            <button 
-              onClick={() => setTarget(target === 33 ? 100 : 33)}
-              className="px-6 h-14 rounded-full glass flex items-center justify-center text-parchment/30 hover:text-gold transition-colors font-bold text-xs"
-            >
-              SET {target === 33 ? 100 : 33}
-            </button>
-            <button 
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className="w-14 h-14 rounded-full glass flex items-center justify-center text-parchment/30 hover:text-gold transition-colors"
-              title="Toggle Sound"
-            >
-              {soundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
-            </button>
+      <div className="pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center min-h-[80vh] cursor-pointer touch-none select-none">
+        <div className="text-center mb-20 pointer-events-none">
+          <motion.h1 className="text-4xl md:text-6xl font-display text-parchment/40 mb-6">Digital <span className="text-gold italic">Tasbih</span></motion.h1>
+          <div className="flex items-center justify-center gap-4 text-gold/30 font-mono text-xs uppercase tracking-widest">
+            <span>Session: {count}</span>
+            <div className="w-1 h-1 bg-gold/20 rounded-full" />
+            <span>Lifetime: {totalCount}</span>
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="mt-40 max-w-xl text-center">
-          <p className="text-parchment/40 leading-relaxed font-light italic">
-            &quot;The best of remembrance is SubhanAllah, Alhamdulillah, and Allahu Akbar.&quot; 
-            Use this digital counter to keep track of your daily dhikr.
-          </p>
+        <div className="flex-1 flex flex-col items-center justify-center gap-12 pointer-events-none">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeRemembrance}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center"
+            >
+              <p className="text-5xl md:text-8xl font-arabic text-gold mb-6">{current.ar}</p>
+              <h2 className="text-2xl font-bold text-parchment mb-2">{current.en}</h2>
+              <p className="text-parchment/40 text-sm italic">{current.mean}</p>
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="relative">
+            <motion.div 
+              key={count}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-[12rem] md:text-[20rem] font-display text-parchment leading-none"
+            >
+              {count}
+            </motion.div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gold/5 blur-[100px] rounded-full -z-10" />
+          </div>
         </div>
+
+        {/* Controls */}
+        <div className="flex items-center gap-8 pb-20 relative z-20" onClick={(e) => e.stopPropagation()}>
+          <button 
+            onClick={reset}
+            className="w-16 h-16 glass rounded-full flex items-center justify-center text-parchment/30 hover:text-gold transition-all"
+          >
+            <RotateCcw size={24} />
+          </button>
+          <div className="h-12 w-px bg-white/10" />
+          <button 
+            onClick={nextDhikir}
+            className="px-8 py-4 glass text-gold font-bold text-xs uppercase tracking-widest rounded-2xl flex items-center gap-3 hover:bg-gold/10 transition-all"
+          >
+            Switch Dhikikr <ChevronRight size={18} />
+          </button>
+        </div>
+
+        <p className="text-parchment/10 text-[10px] uppercase tracking-[0.5em] font-bold pb-10 pointer-events-none">Tap anywhere to count</p>
       </div>
 
+      <Footer />
     </main>
   );
 }

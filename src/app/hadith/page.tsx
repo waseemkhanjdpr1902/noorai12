@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, Book, Filter, Bookmark, Share2, Loader2, AlertCircle } from "lucide-react";
 import HadithCard from "@/components/HadithCard/HadithCard";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface Hadith {
   collection: string;
@@ -64,6 +66,7 @@ export default function HadithPage() {
 
   return (
     <main className="min-h-screen bg-ink">
+      <Navbar />
       
       <div className="pt-40 pb-24 px-6 max-w-7xl mx-auto">
         {/* Header */}
@@ -160,6 +163,7 @@ export default function HadithPage() {
         )}
       </div>
 
+      <Footer />
     </main>
   );
 }

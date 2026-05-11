@@ -7,6 +7,7 @@ import SurahGrid from "@/components/SurahGrid";
 import AIAssistant from "@/components/AIAssistant";
 import RemembrancePopup from "@/components/RemembrancePopup";
 import MuraqbaSection from "@/components/MuraqbaSection";
+import HomeSections from "@/components/HomeSections";
 
 export default function Home() {
   return (
@@ -21,6 +22,8 @@ export default function Home() {
         <SurahGrid />
         
         <MuraqbaSection />
+
+        <HomeSections />
       </div>
 
       <AIAssistant />

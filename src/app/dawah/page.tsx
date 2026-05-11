@@ -84,7 +84,7 @@ export default function DawahPage() {
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: [{ role: "user", parts: [{ text: userMessage }] }],
+        contents: userMessage,
         config: {
           systemInstruction: "You are a wise and kind Dawah companion. Answer questions about Islam with wisdom, evidence from Quran and Sunnah, and a gentle tone. Keep responses scannable and profound."
         }

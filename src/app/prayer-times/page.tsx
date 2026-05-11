@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Clock, MapPin, Compass, Loader2, Sun, Moon, Sunrise, Sunset, CloudSun } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface PrayerTimes {
   Fajr: string;
@@ -146,6 +148,7 @@ export default function PrayerTimesPage() {
 
   return (
     <main className="min-h-screen bg-ink">
+      <Navbar />
       
       <div className="pt-40 pb-24 px-6 max-w-7xl mx-auto">
         {/* Header */}
@@ -276,6 +279,7 @@ export default function PrayerTimesPage() {
         </div>
       </div>
 
+      <Footer />
     </main>
   );
 }
