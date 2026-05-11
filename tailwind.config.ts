@@ -9,21 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#0A0A0F",
-        parchment: "#FAF8F2",
-        gold: "#C49800",
-        emerald: "#12B26E",
-        lapis: "#2B60FF",
-      },
-      animation: {
-        "spin-slow": "spin 8s linear infinite",
-        "bounce-slow": "bounce 3s infinite",
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        gold: "#D4AF37",
+        parchment: "#F5F5DC",
+        ink: "#0F172A",
       },
       fontFamily: {
-        display: ["var(--font-playfair)", "serif"],
-        sans: ["var(--font-inter)", "sans-serif"],
-        arabic: ["var(--font-amiri)", "serif"],
+        display: ["var(--font-display)", "serif"],
+        sans: ["var(--font-sans)", "sans-serif"],
+        arabic: ["var(--font-arabic)", "serif"],
       },
     },
   },

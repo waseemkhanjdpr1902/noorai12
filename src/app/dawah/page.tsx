@@ -7,12 +7,12 @@ import {
   MessageCircle, Info, Quote, CheckCircle2, X,
   ArrowRight, Globe, Shield, Heart
 } from "lucide-react";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 // Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+const ai = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
 
 const DAWAH_CONCEPTS = [
   {
@@ -82,28 +82,11 @@ export default function DawahPage() {
     setIsLoading(true);
 
     try {
-      const response = await ai.models.generateContent({
+      const response = await ai.getGenerativeModel({
         model: "gemini-3-flash-preview",
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: userMessage }]
-          }
-        ],
-        config: {
-          systemInstruction: `You are an expert Islamic Dawah Assistant for the 'NurulQuran' platform. 
-          Your goal is to provide clear, authentic, and compassionate information about Islam.
-          Guidelines:
-          1. Use a welcoming and respectful tone (Hikmah).
-          2. Focus on the core beliefs of Islam (Tawhid, Prophethood, Afterlife).
-          3. Address misconceptions with evidence from the Quran and Sunnah.
-          4. If the user is non-Muslim, be extra patient and explain terms clearly.
-          5. Keep responses concise but multi-layered. 
-          6. Always end with an encouraging thought or a relevant Quranic verse if appropriate.`
-        }
-      });
+      }).generateContent(userMessage);
 
-      const aiContent = response.text || "I apologize, I'm having trouble processing that right now. Please try again.";
+      const aiContent = response.response.text() || "I apologize, I'm having trouble processing that right now. Please try again.";
       setMessages(prev => [...prev, { role: 'ai', content: aiContent }]);
     } catch (error) {
       console.error("Gemini Error:", error);

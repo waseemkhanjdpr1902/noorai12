@@ -2,33 +2,24 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display, Amiri } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
-const amiri = Amiri({ weight: ["400", "700"], subsets: ["arabic"], variable: "--font-amiri" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-display" });
+const amiri = Amiri({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-arabic" });
 
 export const metadata: Metadata = {
-  title: "NurulQuran — Beautiful Modern Quran Platform",
-  description: "Experience the Quran with luxury editorial design, AI-powered study tools, and seamless donations.",
-  keywords: ["Quran", "Islam", "AI", "Tafsir", "Surah", "Muslim"],
+  title: "NurulQuran",
+  description: "A modern Islamic spiritual companion app.",
 };
-
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import RemembrancePopup from "@/components/RemembrancePopup";
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${amiri.variable}`}>
-      <body className="font-sans bg-ink">
-        <Navbar />
+    <html lang="en">
+      <body className={`${inter.variable} ${playfair.variable} ${amiri.variable}`}>
         {children}
-        <Footer />
-        <RemembrancePopup />
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </body>
     </html>
   );
