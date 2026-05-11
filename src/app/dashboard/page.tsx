@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,6 +12,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);

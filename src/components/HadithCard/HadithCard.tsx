@@ -29,17 +29,16 @@ export default function HadithCard({ hadith, onSave }: HadithCardProps) {
     setLoadingAi(true);
     setShowAiContext(true);
     try {
-      const { GoogleGenAI } = await import("@google/genai");
-      const genAI = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
+      const { GoogleGenerativeAI } = await import("@google/generative-ai");
+      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
       
-      const response = await genAI.models.generateContent({ 
-        model: "gemini-3-flash-preview",
-        contents: `Hadith: "${hadith.text}". Source: ${hadith.collection} ${hadith.number}. Provide related Quran verses, their meanings, and study insights.`,
-        config: {
-          systemInstruction: "You are an Islamic scholar specializing in the relationship between Quran and Sunnah. Find related Quranic verses for this Hadith and explain the connection. Provide surah name and verse numbers clearly. Use a profound and wise tone."
-        }
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are an Islamic scholar specializing in the relationship between Quran and Sunnah. Find related Quranic verses for this Hadith and explain the connection. Provide surah name and verse numbers clearly. Use a profound and wise tone."
       });
-      setAiInsight(response.text || "Insight unavailable.");
+
+      const response = await model.generateContent(`Hadith: "${hadith.text}". Source: ${hadith.collection} ${hadith.number}. Provide related Quran verses, their meanings, and study insights.`);
+      setAiInsight(response.response.text() || "Insight unavailable.");
     } catch (error) {
       console.error("AI Context Error:", error);
       setAiInsight("Unable to load spiritual context at this time. Please check your connectivity.");

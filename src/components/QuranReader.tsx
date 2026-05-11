@@ -115,21 +115,20 @@ export default function QuranReader({
     setLoadingAi(true);
     setActiveTab("ai");
     try {
-      const { GoogleGenAI } = await import("@google/genai");
-      const genAI = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
+      const { GoogleGenerativeAI } = await import("@google/generative-ai");
+      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
       
       const prompt = `Provide deep spiritual insights, linguistic analysis, and relevant prophetic hadiths for Quran Verse ${surah.englishName} (${surah.number}:${verse.verse_number}). 
       Arabic: ${verse.text_uthmani}
       Translation: ${verse.translation}`;
       
-      const response = await genAI.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: prompt,
-          config: {
-            systemInstruction: "You are a profound Islamic scholar specializing in Quranic Tafsir and Hadith. Provide wisdom that bridges revelation and modern science/life. Include relevant Sahih Hadith citations."
-          }
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are a profound Islamic scholar specializing in Quranic Tafsir and Hadith. Provide wisdom that bridges revelation and modern science/life. Include relevant Sahih Hadith citations."
       });
-      setAiInsight(response.text || "Insight unavailable at the moment.");
+
+      const response = await model.generateContent(prompt);
+      setAiInsight(response.response.text() || "Insight unavailable at the moment.");
     } catch (error) {
       console.error("AI Insight Error:", error);
       setAiInsight("Unable to generate AI insights. Please check your connection.");

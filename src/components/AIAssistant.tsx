@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Send, User, Bot, X, Loader2 } from "lucide-react";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface Message {
   role: "user" | "model";
@@ -46,7 +46,11 @@ export default function AIAssistant() {
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+      const ai = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+      const model = ai.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are a scholarly Quranic assistant. Provide accurate information based on traditional Tafsir and Quranic linguistics. Always be respectful and start with a polite Islamic greeting if appropriate. Keep your answers concise but profound.",
+      });
       
       // Prepare history for the model
       const history = newMessages.map(msg => ({
@@ -54,15 +58,11 @@ export default function AIAssistant() {
         parts: [{ text: msg.content }]
       }));
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+      const response = await model.generateContent({
         contents: history,
-        config: {
-          systemInstruction: "You are a scholarly Quranic assistant. Provide accurate information based on traditional Tafsir and Quranic linguistics. Always be respectful and start with a polite Islamic greeting if appropriate. Keep your answers concise but profound.",
-        }
       });
 
-      const text = response.text;
+      const text = response.response.text();
       
       if (text) {
         setMessages((prev) => [...prev, { role: "model", content: text }]);
