@@ -1,0 +1,5 @@
+{
+  "name": "NurulQuran",
+  "description": "A beautiful, modern Islamic platform with Quran reading, prayer times, zakat calculator, and spiritual tools.",
+  "requestFramePermissions": ["geolocation"]
+}

@@ -1,0 +1,419 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, BookOpen, Info, Loader2, CheckCircle2, Copy, Share2, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+interface Verse {
+  id: number;
+  verse_number: number;
+  text_uthmani: string;
+  translation: string;
+  audio_url?: string;
+}
+
+const RECITERS = [
+  { id: 7, name: "Mishary Rashid Alafasy" },
+  { id: 1, name: "AbdulBaset AbdulSamad" },
+  { id: 3, name: "Abdur-Rahman as-Sudais" },
+  { id: 4, name: "Abu Bakr al-Shatri" },
+  { id: 6, name: "Hani ar-Rifai" },
+  { id: 12, name: "Mahmoud Al-Husary" },
+];
+
+const RECITER_MAPPING: { [key: number]: string } = {
+  7: "ar.alafasy",
+  1: "ar.abdulsamad",
+  3: "ar.sudais",
+  4: "ar.shatri",
+  6: "ar.hanirifai",
+  12: "ar.husary",
+};
+
+interface Surah {
+  number: number;
+  name: string;
+  englishName: string;
+  englishNameTranslation: string;
+  numberOfAyahs: number;
+  revelationType: string;
+}
+
+import AudioPlayer from "@/components/AudioPlayer/AudioPlayer";
+
+export default function QuranReader({ 
+  surah, 
+  nextSlug, 
+  prevSlug,
+  autoplay = false
+}: { 
+  surah: Surah; 
+  nextSlug?: string | null; 
+  prevSlug?: string | null;
+  autoplay?: boolean;
+}) {
+  const router = useRouter();
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [reciterId, setReciterId] = useState(7);
+  const [playingVerseId, setPlayingVerseId] = useState<number | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [selectedTafsir, setSelectedTafsir] = useState<Verse | null>(null);
+  const [tafsirContent, setTafsirContent] = useState<string | null>(null);
+  const [loadingTafsir, setLoadingTafsir] = useState(false);
+  const [showCopyToast, setShowCopyToast] = useState(false);
+
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+  const fetchTafsir = async (verse: Verse) => {
+    setLoadingTafsir(true);
+    setSelectedTafsir(verse);
+    try {
+      // Using Quran.com API for Tafsir Ibn Kathir (ID: 169 for English)
+      // We use verse.verse_number because id might be absolute number
+      const res = await fetch(`https://api.quran.com/api/v4/quran/tafsirs/169?verse_key=${surah.number}:${verse.verse_number}`);
+      const data = await res.json();
+      if (data.tafsir) {
+        // Sanitize or clean HTML if necessary, though react-markdown might help
+        setTafsirContent(data.tafsir.text);
+      } else {
+        setTafsirContent("Tafsir not found for this verse.");
+      }
+    } catch (error) {
+      console.error("Error fetching tafsir:", error);
+      setTafsirContent("Failed to load tafsir. Please try again later.");
+    } finally {
+      setLoadingTafsir(false);
+    }
+  };
+
+  const playVerse = useCallback((verse: Verse) => {
+    setPlayingVerseId(prevId => {
+      // Toggle if already playing this verse
+      if (prevId === verse.id) {
+        setIsAudioPlaying(currentPlaying => {
+          if (currentPlaying) {
+            setAudioUrl(null);
+            return false;
+          } else {
+            const reciterSlug = RECITER_MAPPING[reciterId] || "ar.alafasy";
+            const fallbackAudio = `https://cdn.alquran.cloud/media/audio/ayah/${reciterSlug}/${verse.id}`;
+            let finalAudio = verse.audio_url || fallbackAudio;
+            if (finalAudio.startsWith("//")) finalAudio = `https:${finalAudio}`;
+            setAudioUrl(finalAudio);
+            return true;
+          }
+        });
+        return prevId;
+      } else {
+        // Switch to new verse
+        const reciterSlug = RECITER_MAPPING[reciterId] || "ar.alafasy";
+        const fallbackAudio = `https://cdn.alquran.cloud/media/audio/ayah/${reciterSlug}/${verse.id}`;
+        let finalAudio = verse.audio_url || fallbackAudio;
+        if (finalAudio.startsWith("//")) finalAudio = `https:${finalAudio}`;
+        
+        setAudioUrl(finalAudio);
+        setIsAudioPlaying(true);
+        return verse.id;
+      }
+    });
+  }, [reciterId]);
+
+  useEffect(() => {
+    const fetchVerses = async () => {
+      setLoading(true);
+      try {
+        const reciterSlug = RECITER_MAPPING[reciterId] || "ar.alafasy";
+        const res = await fetch(`https://api.alquran.cloud/v1/surah/${surah.number}/editions/quran-uthmani,en.sahih,${reciterSlug}`);
+        if (!res.ok) throw new Error("Failed to fetch verses");
+        const data = await res.json();
+        
+        const arabicVerses = data.data[0].ayahs;
+        const englishVerses = data.data[1].ayahs;
+        const audioVerses = data.data[2].ayahs;
+        
+        const combinedVerses = arabicVerses.map((v: any, i: number) => {
+          let audio = audioVerses[i].audio;
+          if (audio && audio.startsWith("//")) {
+            audio = `https:${audio}`;
+          }
+          return {
+            id: v.number,
+            verse_number: v.numberInSurah,
+            text_uthmani: v.text,
+            translation: englishVerses[i].text,
+            audio_url: audio,
+          };
+        });
+        
+        setVerses(combinedVerses);
+      } catch (error) {
+        console.error("Error fetching verses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVerses();
+  }, [surah.number, reciterId]);
+
+  // Handle autoplay on mount
+  const hasAutoplayed = useRef(false);
+  useEffect(() => {
+    if (autoplay && verses.length > 0 && !loading && !hasAutoplayed.current) {
+      hasAutoplayed.current = true;
+      playVerse(verses[0]);
+    }
+  }, [autoplay, loading, verses, playVerse]);
+
+  // Auto-scroll to playing verse
+  useEffect(() => {
+    if (playingVerseId) {
+      const playingVerse = verses.find(v => v.id === playingVerseId);
+      if (playingVerse) {
+        const element = document.getElementById(`verse-${playingVerse.verse_number}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    }
+  }, [playingVerseId, verses]);
+
+  const playNextVerse = useCallback(() => {
+    if (playingVerseId === null) return;
+    const currentIndex = verses.findIndex(v => v.id === playingVerseId);
+    if (currentIndex !== -1 && currentIndex < verses.length - 1) {
+      playVerse(verses[currentIndex + 1]);
+    } else if (nextSlug) {
+      router.push(`/surah/${nextSlug}?autoplay=true`);
+    }
+  }, [playingVerseId, verses, playVerse, nextSlug, router]);
+
+  const playPrevVerse = useCallback(() => {
+    if (playingVerseId === null) return;
+    const currentIndex = verses.findIndex(v => v.id === playingVerseId);
+    if (currentIndex !== -1 && currentIndex > 0) {
+      playVerse(verses[currentIndex - 1]);
+    } else if (prevSlug) {
+      router.push(`/surah/${prevSlug}`);
+    }
+  }, [playingVerseId, verses, playVerse, prevSlug, router]);
+
+  const copyVerse = (verse: Verse) => {
+    const text = `${verse.text_uthmani}\n\n${verse.translation}\n\n(Quran ${surah.number}:${verse.verse_number})`;
+    navigator.clipboard.writeText(text);
+    setShowCopyToast(true);
+    setTimeout(() => setShowCopyToast(false), 2000);
+  };
+
+  const shareSurah = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Surah ${surah.englishName}`,
+        text: `Read and listen to Surah ${surah.englishName} on NurulQuran`,
+        url: window.location.href,
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 gap-6">
+        <Loader2 className="text-gold animate-spin" size={48} />
+        <p className="text-parchment/40 font-display text-xl">Loading verses...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto">
+      {/* Reciter Selection & Info */}
+      <div className="glass p-6 rounded-[32px] border-gold/20 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl gold-gradient flex items-center justify-center text-ink shadow-lg">
+            <BookOpen size={24} />
+          </div>
+          <div>
+            <h4 className="text-parchment font-bold">{surah.englishName}</h4>
+            <select 
+              value={reciterId}
+              onChange={(e) => setReciterId(parseInt(e.target.value))}
+              className="bg-transparent text-gold/60 text-[10px] uppercase tracking-widest outline-none cursor-pointer hover:text-gold transition-colors"
+            >
+              {RECITERS.map(r => (
+                <option key={r.id} value={r.id} className="bg-ink text-parchment">{r.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => {
+              if (verses.length > 0) {
+                if (isAudioPlaying && playingVerseId !== null) {
+                  setIsAudioPlaying(false);
+                  setAudioUrl(null);
+                } else {
+                  playVerse(verses[0]);
+                }
+              }
+            }}
+            className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${isAudioPlaying ? 'bg-gold text-ink shadow-lg shadow-gold/20' : 'glass text-parchment/60 hover:text-gold'}`}
+          >
+            {isAudioPlaying ? <Pause size={14} /> : <Play size={14} />} 
+            {isAudioPlaying ? 'Stop Recitation' : 'Play All'}
+          </button>
+          <button 
+            onClick={shareSurah}
+            className="px-6 py-3 glass rounded-2xl text-parchment/60 text-[10px] font-bold uppercase tracking-widest hover:text-gold transition-all flex items-center gap-2"
+          >
+            <Share2 size={14} /> Share Surah
+          </button>
+        </div>
+      </div>
+
+      {/* Verses List */}
+      <div className="space-y-16 mb-40">
+        {verses.map((verse) => (
+          <motion.div 
+            key={verse.id} 
+            id={`verse-${verse.verse_number}`}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className={`group relative scroll-mt-32 p-8 rounded-[32px] transition-all duration-700 ${playingVerseId === verse.id ? 'glass bg-gold/5 border-gold/10' : 'hover:bg-white/5'}`}
+          >
+            <div className={`hidden md:block absolute -left-12 top-10 font-display text-4xl transition-colors ${playingVerseId === verse.id ? 'text-gold' : 'text-gold/20 group-hover:text-gold/40'}`}>
+              {verse.verse_number}
+            </div>
+            <div className="text-right mb-8">
+              <p className="text-3xl md:text-6xl font-arabic text-parchment leading-[2.2] text-right selection:bg-gold/40">
+                {verse.text_uthmani}
+              </p>
+            </div>
+            <div className="pl-6 md:pl-8 border-l-2 border-gold/10 group-hover:border-gold/30 transition-colors">
+              <p className="text-parchment/70 text-lg md:text-xl leading-relaxed font-light">
+                {verse.translation}
+              </p>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-6 opacity-0 group-hover:opacity-100 transition-all">
+              <button 
+                onClick={() => playVerse(verse)}
+                className={`flex items-center gap-2 transition-colors text-[10px] uppercase tracking-widest ${playingVerseId === verse.id && isAudioPlaying ? 'text-gold' : 'text-parchment/30 hover:text-gold'}`}
+              >
+                {playingVerseId === verse.id && isAudioPlaying ? <Pause size={14} /> : <Play size={14} />} 
+                {playingVerseId === verse.id && isAudioPlaying ? 'Playing' : 'Play Verse'}
+              </button>
+              <button 
+                onClick={() => copyVerse(verse)}
+                className="flex items-center gap-2 text-parchment/30 hover:text-gold transition-colors text-[10px] uppercase tracking-widest"
+              >
+                <Copy size={14} /> Copy
+              </button>
+              <button 
+                onClick={() => fetchTafsir(verse)}
+                className="flex items-center gap-2 text-parchment/30 hover:text-gold transition-colors text-[10px] uppercase tracking-widest"
+              >
+                <Info size={14} /> Tafsir
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Persistent Audio Player */}
+      <AudioPlayer 
+        audioUrl={audioUrl}
+        title={surah.englishName}
+        subtitle={RECITERS.find(r => r.id === reciterId)?.name || ""}
+        autoPlay={autoplay}
+        onNext={playNextVerse}
+        onPrev={playPrevVerse}
+        onPlayStateChange={setIsAudioPlaying}
+      />
+
+      {/* Copy Toast */}
+      <AnimatePresence>
+        {showCopyToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-gold text-ink rounded-full font-bold text-xs shadow-2xl"
+          >
+            Verse copied to clipboard
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Tafsir Modal */}
+      <AnimatePresence>
+        {selectedTafsir && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setSelectedTafsir(null);
+                setTafsirContent(null);
+              }}
+              className="absolute inset-0 bg-ink/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-3xl glass p-8 md:p-12 rounded-[40px] border-gold/20 shadow-2xl max-h-[85vh] flex flex-col"
+            >
+              <button 
+                onClick={() => {
+                  setSelectedTafsir(null);
+                  setTafsirContent(null);
+                }}
+                className="absolute top-8 right-8 text-parchment/30 hover:text-gold transition-colors z-10"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="overflow-y-auto pr-4 custom-scrollbar">
+                <h3 className="text-2xl font-display text-gold mb-4">Verse {selectedTafsir.verse_number} Tafsir</h3>
+                <p className="text-parchment/40 text-[10px] uppercase tracking-widest mb-8">Authoritative Explanation: Ibn Kathir (English)</p>
+                
+                <div className="space-y-8">
+                  <div className="glass p-6 rounded-3xl bg-white/5 border-white/5 text-right">
+                    <p className="text-2xl font-arabic text-parchment leading-loose">{selectedTafsir.text_uthmani}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-gold/60 text-[10px] uppercase tracking-widest mb-2 font-bold">Translation</h4>
+                    <p className="text-parchment/70 leading-relaxed italic border-l-2 border-gold/20 pl-4">&quot;{selectedTafsir.translation}&quot;</p>
+                  </div>
+                  
+                  <div className="pt-8 border-t border-white/5">
+                    {loadingTafsir ? (
+                      <div className="flex flex-col items-center py-12 gap-4">
+                        <Loader2 className="text-gold animate-spin" size={32} />
+                        <p className="text-parchment/30 text-xs animate-pulse">Fetching wisdom...</p>
+                      </div>
+                    ) : (
+                      <div className="prose prose-invert prose-gold max-w-none">
+                        <div 
+                          className="text-parchment/70 leading-relaxed space-y-4 tafsir-content"
+                          dangerouslySetInnerHTML={{ __html: tafsirContent || "" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
