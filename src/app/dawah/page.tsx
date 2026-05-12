@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from 'framer-motion';
 import { 
   Send, Sparkles, HelpCircle, BookOpen, Compass, 
   MessageCircle, Info, Quote, CheckCircle2, X,
