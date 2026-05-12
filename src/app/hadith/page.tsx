@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Book, Filter, Bookmark, Share2, Loader2, AlertCircle } from "lucide-react";
 import HadithCard from "@/components/HadithCard/HadithCard";
 import Navbar from "@/components/Navbar";
