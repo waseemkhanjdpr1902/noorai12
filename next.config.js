@@ -11,9 +11,5 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // ✅ ADD THIS — skips static pre-render for all dynamic pages
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
 };
 module.exports = nextConfig;
