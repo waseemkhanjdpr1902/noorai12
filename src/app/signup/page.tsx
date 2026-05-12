@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic';
 "use client";
-
+export const dynamic = 'force-dynamic';
 import { useState } from "react";
 import { motion } from "motion/react";
 import { UserPlus, Mail, Lock, Chrome, ArrowRight, Loader2, User } from "lucide-react";
